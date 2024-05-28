@@ -62,9 +62,7 @@
               <nuxt-link to="" class="block px-4 py-2 hover:bg-zinc-100">Collections</nuxt-link>
               <nuxt-link to="" class="block px-4 py-2 hover:bg-zinc-100">Pro version</nuxt-link>
               <div class="border-t border-zinc-200"></div>
-              <a href="#" class="block px-4 py-2 hover:bg-zinc-100" @click="signOut">Sign out</a>
-              <div class="border-t border-zinc-200"></div>
-              <a href="#" class="block px-4 py-2 hover:bg-zinc-100" @click="logout">Logout</a>
+              <a href="#" class="block px-4 py-2 hover:bg-zinc-100" @click="logout">Sign out</a>
             </div>
           </div>
         </div>
@@ -82,18 +80,6 @@
         </div>
       </div>
     </footer>
-    <div v-if="showPasswordInput" class="fixed inset-0 bg-black bg-opacity-50 z-50" @click="closeModal"></div>
-    <div v-if="showPasswordInput" class="fixed inset-0 flex items-center justify-center z-50">
-      <form @submit.prevent="verifyPassword" class="bg-white px-10 py-8 rounded-xl shadow-md max-w-sm w-full">
-        <h1 class="text-center text-2xl font-semibold text-gray-600">Enter Password</h1>
-        <div class="mt-4">
-          <label for="otp" class="block mb-1 text-gray-600 font-semibold">Password</label>
-          <input v-model="password" type="password" class="bg-indigo-50 px-4 py-2 outline-none rounded-md w-full" />
-        </div>
-        <button
-          class="mt-4 w-full bg-yellow-500 font-semibold py-2 rounded-md tracking-wide">Verify Password</button>
-      </form>
-    </div>
   </div>
 </template>
 
@@ -107,10 +93,7 @@ export default {
       companyName: '',
       username: '',
       email: '',
-      dropdownVisible: false,
-      auth: false,
-      showPasswordInput: false, // Add state to show OTP input
-      password: '',
+      dropdownVisible: false // Add a data property to track the dropdown visibility
     }
   },
   async mounted() {
@@ -120,101 +103,16 @@ export default {
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
       });
-      if (response.ok){
-        const content = await response.json();
-        this.companyName = content.company_name;
-        this.username = content.username;
-        this.email = content.email;
-      }else{
-        alert('You are not logged in');
-        router.push('/Signup/login');
-      }
+
+      const content = await response.json();
+      this.companyName = content.company_name;
+      this.username = content.username;
+      this.email = content.email;
 
     } catch (e) {
       alert('You are not logged in');
       router.push('/Signup/login');
     }
-  },
-  methods: {
-    async logout() {
-      try {
-        const response = await fetch('http://127.0.0.1:8000/backend/users/logout/', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          credentials: 'include', // Include cookies for logout to work
-        });
-
-        if (!response.ok) {
-          throw new Error('Logout failed');
-        }
-
-        const data = await response.json();
-        console.log(data.message); // Log success message for debugging
-
-        // Clear user data and redirect to login
-        this.companyName = '';
-        this.username = '';
-        this.email = '';
-        this.auth = false;
-
-        this.$router.push('/Signup/login');
-      } catch (error) {
-        console.error('Logout error:', error);
-        alert('Logout failed. Please try again.');
-      }
-    },
-    async signOut() {
-      try {
-        const response = await fetch('http://127.0.0.1:8000/backend/users/signout/', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          credentials: 'include'
-        });
-
-        if (response.ok) {
-          this.showPasswordInput = true;
-          const data = await response.json();
-          console.log(data.message); 
-          alert('Signed out temporarily. Please enter your password to resume session.');
-        } else {
-          const errorData = await response.json();
-          console.error(errorData.message);
-          alert('Sign-out failed. Please try again.');
-        }
-      } catch (error) {
-        console.error('Sign-out error:', error);
-        alert('Sign-out failed. Please try again.');
-      }
-    },
-    closeModal() {
-      this.showPasswordInput = false;
-    },
-    async verifyPassword() {
-      try {
-        const response = await fetch('http://127.0.0.1:8000/backend/users/signin/', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          credentials: 'include',
-          body: JSON.stringify({ password: this.password })
-        });
-
-        if (response.ok) {
-          const data = await response.json();
-          console.log(data.message); // Log success message for debugging
-          this.showPasswordInput = false;
-          alert('Sign-in successful and session resumed.');
-        } else {
-          const errorData = await response.json();
-          console.error(errorData.message);
-          alert('Sign-in failed. Please try again.');
-        }
-      } catch (error) {
-        console.error('Sign-in error:', error);
-        alert('Sign-in failed. Please try again.');
-      }
-    },
   },
   setup() {
     onMounted(() => {
@@ -237,6 +135,8 @@ export default {
   }
 }
 </script>
+
+
 <style scoped>
 .router-link-exact-active {
   color: rgb(251 191 36);

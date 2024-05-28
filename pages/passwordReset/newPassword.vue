@@ -46,11 +46,6 @@
                                     id="confirmPassword" type="password" placeholder="Enter confirmation password..." />
                             </div>
                             <div class="mb-6 text-center">
-                                -Your password should be at least 12 characters long.
-                                -Use a combination of uppercase letters, lowercase letters, numbers, and special characters (e.g., !, @, #, $, %, ^, &, *).
-                                -Do not include easily accessible personal information such as your name, birthday, phone number, or address.
-                            </div>
-                            <div class="mb-6 text-center">
                                 <button
                                     class="w-full px-4 py-2 font-bold text-white bg-red-500 rounded-full hover:bg-red-700 focus:outline-none focus:shadow-outline"
                                     type="submit">
