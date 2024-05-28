@@ -19,5 +19,8 @@ urlpatterns = [
     path('users/roles/', UserViewSet.as_view({'get': 'roles'}), name='get-roles'),
     path('users/authcheck/', UserViewSet.as_view({'get': 'authChecker'}), name='check-auth'),
     path('companies/getcompanies/', CompanyViewSet.as_view({'get': 'companiesList'}), name='get-companies'),
-path('companies/getallcompanies/', CompanyViewSet.as_view({'get': 'getAllCompanies'}), name='get-all-companies'),
+    path('companies/getallcompanies/', CompanyViewSet.as_view({'get': 'getAllCompanies'}), name='get-all-companies'),
+    path('users/signout/', UserViewSet.as_view({'post': 'sign_out'}), name='user-signout'),
+    path('users/signin/', UserViewSet.as_view({'post': 'sign_in'}), name='user-signin'),
+
 ]

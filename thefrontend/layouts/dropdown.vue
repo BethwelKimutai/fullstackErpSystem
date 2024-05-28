@@ -1,103 +1,144 @@
 <template>
-  <ul class="relative flex flex-col gap-2 max-w-[280px] mx-auto mt-24 z-20">
-    <li>
-      <details class="group relative">
-        <summary class="flex items-center justify-between gap-2 p-2 font-medium marker:content-none hover:cursor-pointer">
-          <span class="flex gap-2">
-            <img class="w-6 h-6 rounded-lg" src="https://lh3.googleusercontent.com/a/AGNmyxbSlMgTRzE3_SMIxpDAhpNad-_CN5_tmph1NQ1KhA=s96-c" alt="User Profile">
-            <span>{{ user }}</span>
-          </span>
-          <svg class="w-5 h-5 text-gray-500 transition group-open:rotate-90" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 16 16">
-            <path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"></path>
-          </svg>
-        </summary>
-        <article class="absolute right-0 mt-2 px-4 pb-4 bg-white border rounded shadow-lg z-50">
-          <ul class="flex flex-col gap-4 pl-2 mt-4">
-            <li class="flex gap-2">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456zM16.894 20.567L16.5 21.75l-.394-1.183a2.25 2.25 0 00-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 001.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 001.423 1.423l1.183.394-1.183.394a2.25 2.25 0 00-1.423 1.423z"></path>
-              </svg>
-              <nuxt-link to="http://127.0.0.1:8000/user/dashboard">Dashboard</nuxt-link>
-            </li>
-            <li class="flex gap-2">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M17.593 3.322c1.1.128 1.907 1.077 1.907 2.185V21L12 17.25 4.5 21V5.507c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0111.186 0z"></path>
-              </svg>
-              <nuxt-link to="http://127.0.0.1:8000/user/study-lists">Study Lists</nuxt-link>
-            </li>
-            <li class="flex gap-2">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m6.75 12l-3-3m0 0l-3 3m3-3v6m-1.5-15H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"></path>
-              </svg>
-              <nuxt-link to="http://127.0.0.1:8000/user/contribution">Your contribution</nuxt-link>
-            </li>
-            <li class="flex gap-2">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M10.343 3.94c.09-.542.56-.94 1.11-.94h1.093c.55 0 1.02.398 1.11.94l.149.894c.07.424.384.764.78.93.398.164.855.142 1.205-.108l.737-.527a1.125 1.125 0 011.45.12l.773.774c.39.389.44 1.002.12 1.45l-.527.737c-.25.35-.272.807-.108 1.205.165.396.506.71.93.78l.894.149c.542.09.94.56.94 1.11v1.094c0 .55-.398 1.02-.94 1.11l-.894.149c-.424.07-.764.384-.93.78-.164.398-.142.855.108 1.205l.527.737a1.125 1.125 0 01.12 1.45l-.774.773c-.389.39-1.002.44-1.45.12l-.737-.527c-.35-.25-.807-.272-1.205-.108-.396.165-.71.506-.78.93l-.149.894c-.09.542-.56.94-1.11.94h-1.093c-.55 0-1.02-.398-1.11-.94l-.149-.894c-.07-.424-.384-.764-.78-.93-.398-.164-.855-.142-1.205.108l-.737.527a1.125 1.125 0 01-1.45-.12l-.773-.774a1.125 1.125 0 01-.12-1.45l.527-.737c.25-.35.272-.807.108-1.205-.165-.396-.506-.71-.93-.78l-.894-.149c-.542-.09-.94-.56-.94-1.11v-1.094c0-.55.398-1.02.94-1.11l.894-.149c.424-.07.764-.384.93-.78.164-.398.142-.855-.108-1.205l-.527-.737a1.125 1.125 0 01-.12-1.45l.774-.773c.389-.389 1.002-.44 1.45-.12l.737.527c.35.25.807.272 1.205.108.396-.165.71-.506.78-.93l.149-.894zM15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-              </svg>
-              <nuxt-link to="http://127.0.0.1:8000/user/settings">Settings</nuxt-link>
-            </li>
-          </ul>
-          <div class="flex gap-4 mt-6">
-            <nuxt-link to="http://127.0.0.1:8000/user/profile" class="py-2 px-6 bg-blue-500 hover:bg-blue-700 text-white rounded-full text-sm">My profile</nuxt-link>
-            <button @click="logoutUser" class="py-2 px-6 bg-red-300 hover:bg-red-500 text-white rounded-full text-sm">Log out</button>
+  <div>
+    <header>
+      <div class="dark:bg-gray-800 text-white">
+        <div class="container mx-auto flex justify-between items-center p-4">
+          <div class="flex items-center">
+            <nuxt-link to="/accounting" class="flex items-center space-x-3 rtl:space-x-reverse">
+              <img src="/public/logoTrack.drawio.png" class="h-8" alt="Logo" />
+              <span class="self-center text-2xl font-semibold whitespace-nowrap text-yellow-500">JikoTrack</span>
+            </nuxt-link>
           </div>
-        </article>
-      </details>
-    </li>
-  </ul>
+          <nav class="flex space-x-4">
+            <ul
+              class="flex flex-col font-medium p-4 md:p-0 mt-4 border border-gray-100 rounded-lg bg-gray-50 md:space-x-8 rtl:space-x-reverse md:flex-row md:mt-0 md:border-0 md:bg-white dark:bg-gray-800 dark:border-gray-700">
+              <li>
+                <NuxtLink to="/accounting"
+                  class="block py-2 px-3 text-black bg-yellow-500 rounded md:bg-transparent md:text-yellow-500 md:p-0 md:dark:text-yellow-400"
+                  aria-current="page">Dashboard</NuxtLink>
+              </li>
+              <li>
+                <NuxtLink to="/accounting/customers"
+                  class="block py-2 px-3 text-black rounded hover:bg-yellow-500 md:hover:bg-transparent md:hover:text-yellow-500 md:p-0 dark:text-gray-300 md:dark:hover:text-yellow-400 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">
+                  Customers</NuxtLink>
+              </li>
+              <li>
+                <NuxtLink to="/accounting/vendors"
+                  class="block py-2 px-3 text-gray-900 rounded hover:bg-yellow-500 md:hover:bg-transparent md:hover:text-yellow-500 md:p-0 dark:text-gray-300 md:dark:hover:text-yellow-400 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">
+                  Vendors</NuxtLink>
+              </li>
+              <li>
+                <NuxtLink to="/accounting/accounts"
+                  class="block py-2 px-3 text-gray-900 rounded hover:bg-yellow-500 md:hover:bg-transparent md:hover:text-yellow-500 md:p-0 dark:text-gray-300 md:dark:hover:text-yellow-400 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">
+                  Accounting</NuxtLink>
+              </li>
+              <li>
+                <NuxtLink to="/accounting/reporting"
+                  class="block py-2 px-3 text-gray-900 rounded hover:bg-yellow-500 md:hover:bg-transparent md:hover:text-yellow-500 md:p-0 dark:text-gray-300 md:dark:hover:text-yellow-400 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">
+                  Reporting</NuxtLink>
+              </li>
+              <li>
+                <NuxtLink to="/accounting/configuration"
+                  class="block py-2 px-3 text-gray-900 rounded hover:bg-yellow-500 md:hover:bg-transparent md:hover:text-yellow-500 md:p-0 dark:text-gray-300 md:dark:hover:text-yellow-400 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">
+                  Configurations</NuxtLink>
+              </li>
+            </ul>
+          </nav>
+          <span class="text-sm mr-1">Company: {{ companyName || 'Loading...' }}</span>
+          <div class="relative">
+            <button id="avatarButton" class="flex items-center focus:outline-none ml-0.25">
+              <img src="https://placehold.co/40x40" alt="Avatar" class="rounded-full">
+            </button>
+            <div id="dropdownMenu"
+              class="hidden absolute right-0 mt-2 w-48 bg-white text-zinc-800 rounded-lg shadow-lg z-50">
+              <div class="p-4">
+                <p class="font-bold">{{ username }}</p>
+                <p class="text-sm text-zinc-600">{{ email }}</p>
+              </div>
+              <div class="border-t border-zinc-200"></div>
+              <nuxt-link to="" class="block px-4 py-2 hover:bg-zinc-100">My profile</nuxt-link>
+              <nuxt-link to="" class="block px-4 py-2 hover:bg-zinc-100">Account settings</nuxt-link>
+              <nuxt-link to="" class="block px-4 py-2 hover:bg-zinc-100">My likes</nuxt-link>
+              <nuxt-link to="" class="block px-4 py-2 hover:bg-zinc-100">Collections</nuxt-link>
+              <nuxt-link to="" class="block px-4 py-2 hover:bg-zinc-100">Pro version</nuxt-link>
+              <div class="border-t border-zinc-200"></div>
+              <a href="#" class="block px-4 py-2 hover:bg-zinc-100" @click="logout">Sign out</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+    <div class="min-h-screen flex-1">
+      <slot />
+    </div>
+    <footer class="bg-gray-50">
+      <div class="mx-auto max-w-screen-xl px-4 py-8 sm:px-6 lg:px-8">
+        <div class="sm:flex sm:items-center sm:justify-between">
+          <p class="mt-4 text-center text-sm text-gray-500 lg:mt-0 lg:text-center">
+            Copyright &copy; 2024. All rights reserved.
+          </p>
+        </div>
+      </div>
+    </footer>
+  </div>
 </template>
 
 <script>
+import { onMounted } from 'vue';
+import { useRouter } from 'vue-router'; // Import useRouter to access the router instance
 
 export default {
   data() {
     return {
-      user: ''
-    };
-  },
-  created() {
-    this.checkUserAuthentication();
-  },
-  methods: {
-    async checkUserAuthentication() {
-      const token = localStorage.getItem('jwtToken');
-      if (token) {
-        try {
-          const decodedToken = jwtDecode(token);
-          const userId = decodedToken.user_id; // Assuming the token has a `user_id` field
-          
-          const response = await fetch(`http://127.0.0.1:8000/backend/users/getuser/`, {
-            headers: {
-              'Authorization': `Bearer ${token}`
-            }
-          });
-
-          if (response.ok) {
-            const data = await response.json();
-            if (data.isAuthenticated) {
-              this.user = data.user.name;
-            } else {
-              this.$router.push('/signup-login');
-            }
-          } else {
-            this.$router.push('/signup-login');
-          }
-        } catch (error) {
-          console.error('Error checking user authentication:', error);
-          this.$router.push('/signup-login');
-        }
-      } else {
-        this.$router.push('/signup-login');
-      }
-    },
-    async logoutUser() {
-      localStorage.removeItem('jwtToken');
-      this.$router.push('/Signup/login');
+      companyName: '',
+      username: '',
+      email: '',
+      dropdownVisible: false // Add a data property to track the dropdown visibility
     }
+  },
+  async mounted() {
+    const router = useRouter(); // Get the router instance
+    try {
+      const response = await fetch('http://127.0.0.1:8000/backend/users/getuser/', {
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+      });
+
+      const content = await response.json();
+      this.companyName = content.company_name;
+      this.username = content.username;
+      this.email = content.email;
+
+    } catch (e) {
+      alert('You are not logged in');
+      router.push('/Signup/login');
+    }
+  },
+  setup() {
+    onMounted(() => {
+      const avatarButton = document.getElementById('avatarButton');
+      const dropdownMenu = document.getElementById('dropdownMenu');
+
+      if (avatarButton && dropdownMenu) {
+        avatarButton.addEventListener('click', (event) => {
+          event.stopPropagation();
+          dropdownMenu.classList.toggle('hidden');
+        });
+
+        document.addEventListener('click', () => {
+          dropdownMenu.classList.add('hidden');
+        });
+      } else {
+        console.error('Elements not found');
+      }
+    });
   }
 }
 </script>
+
+
 <style scoped>
-/* Add your styles here */
+.router-link-exact-active {
+  color: rgb(251 191 36);
+}
 </style>

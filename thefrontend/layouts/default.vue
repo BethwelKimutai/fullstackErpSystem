@@ -1,113 +1,52 @@
 <template>
     <div>
-        <div>
-            <header>
-                <div class="dark:bg-gray-800 text-white">
-                    <div class="container mx-auto flex justify-between items-center p-4">
-                        <div class="flex items-center">
-                            <nuxt-link to="/accounting" class="flex items-center space-x-3 rtl:space-x-reverse">
-                                <img src="/public/logoTrack.drawio.png" class="h-8" alt="Logo" />
-                                <span
-                                    class="self-center text-2xl font-semibold whitespace-nowrap text-yellow-500">JikoTrack</span>
-                            </nuxt-link>
+        <nav class="bg-white dark:bg-grey-800 border-b border-zinc-200 dark:bg-gray-800">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between h-16">
+                    <div class="flex">
+                        <div class="flex-shrink-0 flex items-center">
+                            <img class="h-8 w-auto" src="https://placehold.co/100x40" alt="Logo" />
                         </div>
-                        <nav class="flex space-x-4">
-                            <ul
-                                class="flex flex-col font-medium p-4 md:p-0 mt-4 border border-gray-100 rounded-lg bg-gray-50 md:space-x-8 rtl:space-x-reverse md:flex-row md:mt-0 md:border-0 md:bg-white dark:bg-gray-800 dark:border-gray-700">
-                                <li>
-                                    <NuxtLink to="/accounting"
-                                        class="block py-2 px-3 text-black bg-yellow-500 rounded md:bg-transparent md:text-yellow-500 md:p-0 md:dark:text-yellow-400"
-                                        aria-current="page">Dashboard</NuxtLink>
-                                </li>
-                                <li>
-                                    <NuxtLink to="/accounting/customers"
-                                        class="block py-2 px-3 text-black rounded hover:bg-yellow-500 md:hover:bg-transparent md:hover:text-yellow-500 md:p-0 dark:text-gray-300 md:dark:hover:text-yellow-400 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">
-                                        Customers</NuxtLink>
-                                </li>
-                                <li>
-                                    <NuxtLink to="/accounting/vendors"
-                                        class="block py-2 px-3 text-gray-900 rounded hover:bg-yellow-500 md:hover:bg-transparent md:hover:text-yellow-500 md:p-0 dark:text-gray-300 md:dark:hover:text-yellow-400 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">
-                                        Vendors</NuxtLink>
-                                </li>
-                                <li>
-                                    <NuxtLink to="/accounting/accounts"
-                                        class="block py-2 px-3 text-gray-900 rounded hover:bg-yellow-500 md:hover:bg-transparent md:hover:text-yellow-500 md:p-0 dark:text-gray-300 md:dark:hover:text-yellow-400 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">
-                                        Accounting</NuxtLink>
-                                </li>
-                                <li>
-                                    <NuxtLink to="/accounting/reporting"
-                                        class="block py-2 px-3 text-gray-900 rounded hover:bg-yellow-500 md:hover:bg-transparent md:hover:text-yellow-500 md:p-0 dark:text-gray-300 md:dark:hover:text-yellow-400 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">
-                                        Reporting</NuxtLink>
-                                </li>
-                                <li>
-                                    <NuxtLink to="/accounting/configuration"
-                                        class="block py-2 px-3 text-gray-900 rounded hover:bg-yellow-500 md:hover:bg-transparent md:hover:text-yellow-500 md:p-0 dark:text-gray-300 md:dark:hover:text-yellow-400 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">
-                                        Configurations</NuxtLink>
-                                </li>
-                            </ul>
-                        </nav>
-                        <div class="relative">
-                            <button id="avatarButton" class="flex items-center focus:outline-none">
-                                <img src="https://placehold.co/40x40" alt="Avatar" class="rounded-full">
-                            </button>
-                            <div id="dropdownMenu"
-                                class="hidden absolute right-0 mt-2 w-48 bg-white text-zinc-800 rounded-lg shadow-lg">
-                                <div class="p-4">
-                                    <p class="font-bold">Neil Sims</p>
-                                    <p class="text-sm text-zinc-600">name@flowbite.com</p>
-                                </div>
-                                <div class="border-t border-zinc-200"></div>
-                                <nuxt-link to="" class="block px-4 py-2 hover:bg-zinc-100">My profile</nuxt-link>
-                                <nuxt-link to="" class="block px-4 py-2 hover:bg-zinc-100">Account settings</nuxt-link>
-                                <nuxt-link to="" class="block px-4 py-2 hover:bg-zinc-100">My likes</nuxt-link>
-                                <nuxt-link to="" class="block px-4 py-2 hover:bg-zinc-100">Collections</nuxt-link>
-                                <nuxt-link to="" class="block px-4 py-2 hover:bg-zinc-100">Pro version</nuxt-link>
-                                <div class="border-t border-zinc-200"></div>
-                                <a href="#" class="block px-4 py-2 hover:bg-zinc-100">Sign out</a>
-                            </div>
+                        <div class="hidden sm:ml-6 sm:flex sm:space-x-8">
+                            <a href="#"
+                                class="text-zinc-900 dark:text-white inline-flex items-center px-1 pt-1 text-sm font-medium">Apps</a>
+                            <a href="#"
+                                class="text-zinc-900 dark:text-white inline-flex items-center px-1 pt-1 text-sm font-medium">Community</a>
+                            <a href="#"
+                                class="text-zinc-900 dark:text-white inline-flex items-center px-1 pt-1 text-sm font-medium">Pricing</a>
+                            <a href="#"
+                                class="text-zinc-900 dark:text-white inline-flex items-center px-1 pt-1 text-sm font-medium">Contact</a>
                         </div>
                     </div>
-                </div>
-            </header>
-        </div>
-        <div class="min-h-screen flex-1">
-            <slot />
-        </div>
-        <div>
-            <footer class="bg-gray-50">
-                <div class="mx-auto max-w-screen-xl px-4 py-8 sm:px-6 lg:px-8">
-                    <div class="sm:flex sm:items-center sm:justify-between">
-                        <p class="mt-4 text-center text-sm text-gray-500 lg:mt-0 lg:text-center">
-                            Copyright &copy; 2024. All rights reserved.
-                        </p>
+                    <div class="hidden sm:ml-6 sm:flex sm:items-center">
+                        <nuxt-link to="/Signup/login"
+                            class="text-zinc-900 dark:text-white inline-flex items-center px-1 pt-1 text-sm font-medium">Sign
+                            in</nuxt-link>
+                        <nuxt-link to="/Signup/compApp" class="ml-4 bg-purple-600 text-white px-3 py-2 rounded-md text-sm font-medium">Try
+                            it free</nuxt-link>
                     </div>
                 </div>
-            </footer>
-        </div>
+            </div>
+        </nav>
+    </div>
+    <div class="min-h-screen flex-1">
+        <slot />
+    </div>
+    <div>
+        <footer class="bg-gray-50">
+            <div class="mx-auto max-w-screen-xl px-4 py-8 sm:px-6 lg:px-8">
+                <div class="sm:flex sm:items-center sm:justify-between">
+                    <p class="mt-4 text-center text-sm text-gray-500 lg:mt-0 lg:text-center">
+                        Copyright &copy; 2024. All rights reserved.
+                    </p>
+                </div>
+            </div>
+        </footer>
     </div>
 </template>
 
-<script setup>
-import { onMounted } from 'vue';
+<script setup></script>
 
-onMounted(() => {
-    const avatarButton = document.getElementById('avatarButton');
-    const dropdownMenu = document.getElementById('dropdownMenu');
-
-    if (avatarButton && dropdownMenu) {
-        avatarButton.addEventListener('click', (event) => {
-            event.stopPropagation();
-            dropdownMenu.classList.toggle('hidden');
-        });
-
-        document.addEventListener('click', () => {
-            dropdownMenu.classList.add('hidden');
-        });
-    } else {
-        console.error('Elements not found');
-    }
-});
-</script>
 
 <style scoped>
 .router-link-exact-active {

@@ -65,4 +65,7 @@ class UserDetailsSerializer(serializers.Serializer):
     is_accounting_manager = serializers.BooleanField(default=False)
     is_inventory_manager = serializers.BooleanField(default=False)
     is_purchase_manager = serializers.BooleanField(default=False)
-    company_name = serializers.CharField()
+    company_name = serializers.SerializerMethodField()
+
+    def get_company_name(self, obj):
+        return obj.company.companyName if obj.company else None

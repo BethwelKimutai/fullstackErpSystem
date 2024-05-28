@@ -1,5 +1,5 @@
 import random
-from datetime import datetime
+from datetime import datetime, timedelta
 
 import phonenumbers
 from django.contrib.auth import login, logout, authenticate, get_user_model
@@ -16,16 +16,18 @@ from rest_framework.decorators import action
 from rest_framework.exceptions import AuthenticationFailed, NotFound
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from rest_framework.utils import json
 from simplejwt import jwt
 
-from .models import Company, User
+from .models import Company, User, UserOTP
 from .serializers import CompanySerializer, UserSerializer, UserDetailsSerializer
 from django.core.exceptions import ValidationError
 from phonenumbers import parse, format_number, region_code_for_number
 from pycountry import countries
 import jwt
 import datetime
-from .models import UserOTP
+
+User = get_user_model()
 
 
 class CompanyViewSet(viewsets.ModelViewSet):
@@ -125,7 +127,8 @@ class CompanyViewSet(viewsets.ModelViewSet):
         serializer = CompanySerializer(companies, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-    methods=['get']
+    methods = ['get']
+
     def getAllCompanies(self, request):
         try:
             companies = Company.objects.all()
@@ -147,8 +150,6 @@ class CompanyViewSet(viewsets.ModelViewSet):
             return Response(company_list, status=status.HTTP_200_OK)
         except Exception as e:
             return Response({"message": str(e)}, status=status.HTTP_400_BAD_REQUEST)
-
-User = get_user_model()
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -183,6 +184,7 @@ class UserViewSet(viewsets.ModelViewSet):
                 'is_accounting_manager': user.is_accounting_manager,
                 'is_inventory_manager': user.is_inventory_manager,
                 'is_purchase_manager': user.is_purchase_manager,
+                'is_superuser': user.is_superuser
             }
 
             response = Response()
@@ -203,7 +205,7 @@ class UserViewSet(viewsets.ModelViewSet):
             # Convert roles from word form to the form understood by the serializer
             role_mapping = {
                 'Manager': 'is_manager',
-                'Admin': 'is_superuser',
+                'Admin': 'is_staff',
                 'Accounting Manager': 'is_accounting_manager',
                 'Inventory Manager': 'is_inventory_manager',
                 'Purchase Manager': 'is_purchase_manager',
@@ -252,7 +254,7 @@ class UserViewSet(viewsets.ModelViewSet):
             token = request.COOKIES.get('jwt')
 
             if not token:
-                return Response({"message": "Authentication token not provided"}, status=status.HTTP_401_UNAUTHORIZED)
+                return Response({"message": "Unauthenticated"}, status=status.HTTP_401_UNAUTHORIZED)
 
             # Decode the JWT token
             try:
@@ -263,236 +265,163 @@ class UserViewSet(viewsets.ModelViewSet):
                 return Response({"message": "Invalid authentication token"}, status=status.HTTP_401_UNAUTHORIZED)
 
             # Get the user ID from the payload
-            user_id = payload['sub']
+            user_id = payload.get('sub')
+            if not user_id:
+                return Response({"message": "Invalid payload in token"}, status=status.HTTP_401_UNAUTHORIZED)
 
-            # Retrieve the user
-            user = User.objects.get(id=user_id)
-
-            # Check if the user exists
-            if not user:
-                return Response({"message": "User not found"}, status=status.HTTP_404_NOT_FOUND)
-
-            # Retrieve the company details of the user
-            company = Company.objects.get(id=user.company_id)
-
-            # User details to return
-            user_details = {
-                'id': user.id,
-                'username': user.username,
-                'email': user.email,
-                'company_name': company.companyName,
-                'is_manager': user.is_manager,
-                'is_accounting_manager': user.is_accounting_manager,
-                'is_inventory_manager': user.is_inventory_manager,
-                'is_purchase_manager': user.is_purchase_manager,
-            }
-
-            return Response({'user_details': user_details}, status=status.HTTP_200_OK)
-
-        except Exception as e:
-            return Response({"message": str(e)}, status=status.HTTP_400_BAD_REQUEST)
-
-    @action(detail=False, methods=['get'], permission_classes=[IsAuthenticated])
-    def getUserById(self, request, user_id):
-        try:
-            token = request.COOKIES.get('jwt')
-
-            if not token:
-                return Response({"message": "Authentication token is missing"}, status=400)
-
-            try:
-                payload = jwt.decode(token, 'secret', algorithms=['HS256'])
-            except jwt.ExpiredSignatureError:
-                return Response({"message": "Token has expired"}, status=401)
-            except jwt.InvalidTokenError:
-                return Response({"message": "Invalid token"}, status=401)
-
+            # Retrieve the user object
             user = get_object_or_404(User, id=user_id)
-            company = Company.objects.get(id=user.company_id)
 
-            user_details = {
-                'username': user.username,
-                'email': user.email,
-                'role': 'Manager' if user.is_manager else
-                'Accounting Manager' if user.is_accounting_manager else
-                'Inventory Manager' if user.is_inventory_manager else
-                'Purchase Manager' if user.is_purchase_manager else
-                'User',
-                'company_name': company.name
-            }
+            # Serialize the logged-in user data
+            serializer = UserDetailsSerializer(user)
+            return Response(serializer.data, status=status.HTTP_200_OK)
 
-            return Response(user_details, status=200)
         except Exception as e:
             return Response({"message": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
-    @action(detail=False, methods=['post'])
-    def forgotPassword(self, request):
+    @action(detail=True, methods=['post'])
+    def deleteUser(self, request, pk=None):
         try:
-            username_or_email = request.data.get('username') or request.data.get('email')
-            if not username_or_email:
-                raise ValidationError('Username or email is required')
+            user = self.get_object()
 
-            user = User.objects.filter(Q(username=username_or_email) | Q(email=username_or_email)).first()
-            if not user:
-                return Response({'status': 'user not found'}, status=status.HTTP_404_NOT_FOUND)
+            if user.is_superuser:
+                return Response({"message": "Cannot delete superuser"}, status=status.HTTP_400_BAD_REQUEST)
 
-            # Get or create the OTP record for the user
-            user_otp, created = UserOTP.objects.get_or_create(user=user)
+            user.delete()
 
-            # Generate and save the OTP
-            user_otp.generate_otp()
-
-            # Send email with OTP
-            send_mail(
-                'Password Reset Request',
-                f'Your one-time password (OTP) to reset your password is: {user_otp.otp}',
-                'from@example.com',
-                [user.email],
-                fail_silently=False,
-            )
-
-            return Response({'status': 'otp sent'}, status=status.HTTP_200_OK)
+            return Response({'status': 'user deleted'})
         except Exception as e:
             return Response({"message": str(e)}, status=status.HTTP_400_BAD_REQUEST)
-
-    @action(detail=False, methods=['post'])
-    def forgotPasswordOtpVerification(self, request):
-        try:
-            otp = request.data.get('otp')
-            if not otp:
-                return Response({'message': 'OTP is required'}, status=status.HTTP_400_BAD_REQUEST)
-
-            user_otp = UserOTP.objects.filter(otp=otp).first()
-
-            if not user_otp:
-                return Response({'message': 'User not found or OTP is incorrect'}, status=status.HTTP_404_NOT_FOUND)
-
-            # Check if OTP has expired (assuming OTP is valid for 10 minutes)
-            otp_age = timezone.now() - user_otp.created_at
-            if otp_age.seconds > 6000:
-                return Response({'message': 'OTP has expired'}, status=status.HTTP_400_BAD_REQUEST)
-
-            user = user_otp.user
-            user.is_active = True
-            user.save()
-
-            # Clean up the OTP after successful verification
-            user_otp.otp = None
-            user_otp.save()
-
-            return Response({'message': 'Account verified successfully'}, status=status.HTTP_200_OK)
-        except Exception as e:
-            return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
-
-    @action(detail=False, methods=['post'])
-    def newPassword(self, request):
-        try:
-            new_password = request.data.get('new_password')
-            confirm_password = request.data.get('confirm_password')
-
-            if not new_password or not confirm_password:
-                raise ValidationError('Both new password and confirm password are required.')
-
-            if new_password != confirm_password:
-                raise ValidationError('Passwords do not match.')
-
-            # Locate user by username or email
-            username_or_email = request.data.get('username') or request.data.get('email')
-            if not username_or_email:
-                raise ValidationError('Username or email is required.')
-
-            user = User.objects.filter(Q(username=username_or_email) | Q(email=username_or_email)).first()
-            if not user:
-                return Response({'message': 'User not found.'}, status=status.HTTP_404_NOT_FOUND)
-
-            # Update the user's password
-            user.password = make_password(new_password)
-            user.save()
-
-            return Response({'message': 'Password updated successfully.'}, status=status.HTTP_200_OK)
-        except ValidationError as ve:
-            return Response({'message': str(ve)}, status=status.HTTP_400_BAD_REQUEST)
-        except Exception as e:
-            return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
     @action(detail=False, methods=['post'])
     def logout(self, request):
         try:
+            response = Response()
+            response.delete_cookie('jwt')
             logout(request)
-            return Response({'status': 'logged out'})
+            response.data = {'message': 'User logged out successfully'}
+            return response
+        except Exception as e:
+            return Response({"message": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+    @action(detail=False, methods=['post'])
+    def sign_out(self, request):
+        try:
+            token = request.COOKIES.get('jwt')
+
+            if not token:
+                return Response({"message": "Authentication token not provided"}, status=status.HTTP_401_UNAUTHORIZED)
+
+            try:
+                payload = jwt.decode(token, 'secret', algorithms=['HS256'])
+            except jwt.ExpiredSignatureError:
+                return Response({"message": "Authentication token has expired"}, status=status.HTTP_401_UNAUTHORIZED)
+            except jwt.InvalidTokenError:
+                return Response({"message": "Invalid authentication token"}, status=status.HTTP_401_UNAUTHORIZED)
+
+            user_id = payload['sub']
+            user = get_object_or_404(User, id=user_id)
+
+            login_time = timezone.now()
+
+            temp_session = {
+                'user_id': user.id,
+                'login_time': login_time.isoformat()
+            }
+
+            response = Response()
+            response.set_cookie(key='temp_session', value=json.dumps(temp_session),
+                                httponly=True)  # JSON encode the session data
+            response.delete_cookie('jwt')
+            logout(request)
+            response.data = {'message': 'User signed out temporarily'}
+            return response
+        except Exception as e:
+            return Response({"message": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+    @action(detail=False, methods=['post'])
+    def sign_in(self, request):
+        try:
+            temp_session = request.COOKIES.get('temp_session')
+
+            if not temp_session:
+                return Response({"message": "Temporary session not found"}, status=status.HTTP_400_BAD_REQUEST)
+
+            try:
+                temp_session = json.loads(temp_session)  # Decode the JSON-encoded string
+            except:
+                return Response({"message": "Invalid temporary session data"}, status=status.HTTP_400_BAD_REQUEST)
+
+            password = request.data.get('password')
+            if not password:
+                return Response({"message": "Password not provided"}, status=status.HTTP_400_BAD_REQUEST)
+
+            user_id = temp_session.get('user_id')
+            login_time = temp_session.get('login_time')
+
+            if not user_id or not login_time:
+                return Response({"message": "Invalid temporary session data"}, status=status.HTTP_400_BAD_REQUEST)
+
+            user = get_object_or_404(User, id=user_id)
+            user = authenticate(username=user.username, password=password)
+
+            if user is None:
+                return Response({"message": "Invalid password"}, status=status.HTTP_401_UNAUTHORIZED)
+
+            # Create JWT token
+            payload = {
+                'sub': user.id,
+                'iat': timezone.now(),
+                'exp': timezone.now() + timezone.timedelta(hours=1)
+            }
+            token = jwt.encode(payload, 'secret', algorithm='HS256')
+
+            # Log the user in
+            login(request, user)
+
+            # Create response
+            response = Response()
+            response.set_cookie(key='jwt', value=token, httponly=True)
+            response.delete_cookie('temp_session')
+            response.data = {'message': 'User signed in successfully and session resumed'}
+
+            return response
+
         except Exception as e:
             return Response({"message": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
     @action(detail=False, methods=['get'])
     def getAllUsers(self, request):
         try:
-            users = User.objects.all()
+            users = User.objects.all().select_related('company')  # Optimize queries by selecting related company
             user_list = []
 
             for user in users:
-                company = get_object_or_404(Company, id=user.company_id)
+                # Determine the role based on the hierarchy
+                if user.is_superuser:
+                    role = 'superuser'
+                elif user.is_manager:
+                    role = 'manager'
+                elif user.is_accounting_manager:
+                    role = 'accounting_manager'
+                elif user.is_inventory_manager:
+                    role = 'inventory_manager'
+                elif user.is_purchase_manager:
+                    role = 'purchase_manager'
+                else:
+                    role = 'user'
+
                 user_details = {
                     'id': user.id,
                     'username': user.username,
                     'email': user.email,
-                    'role': 'Manager' if user.is_manager else
-                    'Accounting Manager' if user.is_accounting_manager else
-                    'Inventory Manager' if user.is_inventory_manager else
-                    'Purchase Manager' if user.is_purchase_manager else
-                    'User',
-                    'company': company.name,
+                    'role': role,
+                    'last_name': user.last_name,
                     'is_active': user.is_active,
-                    'date_joined': user.date_joined
+                    'company_name': user.company.name if user.company else None  # Add company name
                 }
                 user_list.append(user_details)
 
             return Response(user_list, status=status.HTTP_200_OK)
         except Exception as e:
             return Response({"message": str(e)}, status=status.HTTP_400_BAD_REQUEST)
-
-    @action(detail=False, methods=['put'])
-    def updateUser(self, request, user_id):
-        try:
-            user = get_object_or_404(User, id=user_id)
-            data = request.data
-            allowed_fields = ['username', 'email', 'role']
-            updated_data = {field: data[field] for field in allowed_fields if field in data}
-
-            serializer = UserSerializer(user, data=updated_data, partial=True)
-            if serializer.is_valid():
-                serializer.save()
-                return Response(serializer.data, status=status.HTTP_200_OK)
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        except Exception as e:
-            return Response({"message": f"error: {str(e)}"}, status=status.HTTP_400_BAD_REQUEST)
-
-    @action(detail=False, methods=['delete'])
-    def delete(self, request, user_id):
-        user = get_object_or_404(User, user_id)
-        user.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
-
-    @action(detail=False, methods=['get'])
-    def roles(self, request):
-        roles = [
-            {'label': 'Manager', 'value': 'Manager'},
-            {'label': 'Admin', 'value': 'Admin'},
-            {'label': 'User', 'value': 'User'},
-            {'label': 'Accounting Manager', 'value': 'Accounting Manager'},
-            {'label': 'Inventory Manager', 'value': 'Inventory Manager'},
-            {'label': 'Purchase Manager', 'value': 'Purchase Manager'}
-        ]
-        return Response(roles, status=status.HTTP_200_OK)
-
-    @action(detail=False, methods=['get'])
-    def authChecker(self, request):
-        try:
-            user = request.user
-            user_data = {
-                "name": user.username,
-                "email": user.email,
-                "role": user.roles
-            }
-            return Response({"isAuthenticated": True, "user": user_data}, status=status.HTTP_200_OK)
-        except Exception as e:
-            return Response({"message": f"Error; {str(e)}"})

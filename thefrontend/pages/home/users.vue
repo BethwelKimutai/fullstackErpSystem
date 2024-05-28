@@ -120,7 +120,7 @@ const fetchUsers = async () => {
     users.value = data
     window.dispatchEvent(new CustomEvent('auth', { detail: true }))
   } catch (e) {
-    await router.push('/Signup/loginCompany')
+    await router.push('/Signup/login')
     window.dispatchEvent(new CustomEvent('auth', { detail: false }))
   }
 }
@@ -149,9 +149,9 @@ const viewDetails = (userId) => {
 
 onMounted(fetchUsers)
 
-// definePageMeta({
-//   layout: "home",
-// })
+definePageMeta({   
+  layout: "home",
+})
 </script>
 
 <style scoped></style>

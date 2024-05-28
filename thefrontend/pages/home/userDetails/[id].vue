@@ -111,6 +111,10 @@ const cancel = async () => {
 }
 
 onMounted(fetchUser)
+definePageMeta({   
+  layout: "home",
+})
+
 </script>
 
 <style scoped>

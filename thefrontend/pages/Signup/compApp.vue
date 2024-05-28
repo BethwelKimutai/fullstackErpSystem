@@ -1,37 +1,37 @@
 <template>
     <div>
 
-        <body class="bg-zinc-100 dark:bg-zinc-900 p-6">
+        <body class="bg-white dark:bg-white p-6">
             <div id="app" class="flex flex-col lg:flex-row">
-                <div class="bg-white dark:bg-zinc-800 p-8 rounded-lg shadow-md w-full lg:w-2/3">
+                <div class="bg-white dark:bg-white p-8 rounded-lg shadow-md w-full lg:w-2/3">
                     <h1 class="text-2xl font-bold text-teal-600 dark:text-teal-400">JikoTrack | Get Started</h1>
                     <p class="mt-2 text-zinc-600 dark:text-zinc-300">Apply now!.</p>
                     <form @submit.prevent="submitForm" class="mt-6 space-y-4">
                         <div>
                             <label class="block text-zinc-700 dark:text-zinc-400">Full Name</label>
                             <input v-model="form.name" type="text" name="name"
-                                class="w-full mt-1 p-2 border border-zinc-300 dark:border-zinc-600 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 dark:bg-zinc-700 dark:text-zinc-200">
+                                class="w-full mt-1 p-2 border border-zinc-300 dark:border-zinc-600 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 dark:bg-zinc-700 dark:bg-indigo-50">
                         </div>
                         <div>
                             <label class="block text-zinc-700 dark:text-zinc-400">Email</label>
                             <input v-model="form.email" type="email" name="email"
-                                class="w-full mt-1 p-2 border border-zinc-300 dark:border-zinc-600 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 dark:bg-zinc-700 dark:text-zinc-200">
+                                class="w-full mt-1 p-2 border border-zinc-300 dark:border-zinc-600 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 dark:bg-zinc-700 dark:bg-indigo-50">
                         </div>
                         <div>
                             <label class="block text-zinc-700 dark:text-zinc-400">Password</label>
                             <input v-model="form.password" type="password" name="password"
-                                class="w-full mt-1 p-2 border border-zinc-300 dark:border-zinc-600 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 dark:bg-zinc-700 dark:text-zinc-200">
+                                class="w-full mt-1 p-2 border border-zinc-300 dark:border-zinc-600 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 dark:bg-zinc-700 dark:bg-indigo-50">
                         </div>
                         <div>
                             <label class="block text-zinc-700 dark:text-zinc-400">Company Name</label>
                             <input v-model="form.companyName" type="text" name="companyName"
-                                class="w-full mt-1 p-2 border border-zinc-300 dark:border-zinc-600 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 dark:bg-zinc-700 dark:text-zinc-200">
+                                class="w-full mt-1 p-2 border border-zinc-300 dark:border-zinc-600 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 dark:bg-zinc-700 dark:bg-indigo-50">
                         </div>
                         <div class="flex space-x-4">
                             <div class="w-1/2">
                                 <label class="block text-zinc-700 dark:text-zinc-400">Country</label>
                                 <select v-model="form.country" name="country"
-                                    class="w-full mt-1 p-2 border border-zinc-300 dark:border-zinc-600 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 dark:bg-zinc-700 dark:text-zinc-200">
+                                    class="w-full mt-1 p-2 border border-zinc-300 dark:border-zinc-600 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 dark:bg-zinc-700 dark:bg-indigo-50">
                                     <option>Kenya</option>
                                     <option>Rwanda</option>
                                     <option>Uganda</option>
@@ -40,27 +40,27 @@
                             </div>
                             <div class="w-1/2">
                                 <label class="block text-zinc-700 dark:text-zinc-400">Phone Number</label>
-                                <input v-model="form.number" type="text" name="number" class="w-full mt-1 p-2 border border-zinc-300 dark:border-zinc-600 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 dark:bg-zinc-700 dark:text-zinc-200">
+                                <input v-model="form.number" type="text" name="number" class="w-full mt-1 p-2 border border-zinc-300 dark:border-zinc-600 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 dark:bg-zinc-700 dark:bg-indigo-50">
 
                             </div>
                             <div class="w-1/2">
                                 <label class="block text-zinc-700 dark:text-zinc-400">Address</label>
                                 <input v-model="form.address" type="text" name="address"
-                                    class="w-full mt-1 p-2 border border-zinc-300 dark:border-zinc-600 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 dark:bg-zinc-700 dark:text-zinc-200">
+                                    class="w-full mt-1 p-2 border border-zinc-300 dark:border-zinc-600 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 dark:bg-zinc-700 dark:bg-indigo-50">
                             </div>
                         </div>
                         <div class="flex space-x-4">
                             <div class="w-1/2">
                                 <label class="block text-zinc-700 dark:text-zinc-400">Language</label>
                                 <select v-model="form.language" name="language"
-                                    class="w-full mt-1 p-2 border border-zinc-300 dark:border-zinc-600 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 dark:bg-zinc-700 dark:text-zinc-200">
+                                    class="w-full mt-1 p-2 border border-zinc-300 dark:border-zinc-600 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 dark:bg-zinc-700 dark:bg-indigo-50">
                                     <option>English</option>
                                 </select>
                             </div>
                             <div class="w-1/2">
                                 <label class="block text-zinc-700 dark:text-zinc-400">Primary Interest</label>
                                 <select v-model="form.primaryInterest" name="primaryInterest"
-                                    class="w-full mt-1 p-2 border border-zinc-300 dark:border-zinc-600 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 dark:bg-zinc-700 dark:text-zinc-200">
+                                    class="w-full mt-1 p-2 border border-zinc-300 dark:border-zinc-600 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 dark:bg-zinc-700 dark:bg-indigo-50">
                                     <option>Use it in my Company</option>
                                     <option>Offer JikoTrack services to other Companies</option>
                                     <option>I am a Student</option>
@@ -71,7 +71,7 @@
                             <div class="w-1/2">
                                 <label class="block text-zinc-700 dark:text-zinc-400">Company Size</label>
                                 <select v-model="form.companySize" name="companySize"
-                                    class="w-full mt-1 p-2 border border-zinc-300 dark:border-zinc-600 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 dark:bg-zinc-700 dark:text-zinc-200">
+                                    class="w-full mt-1 p-2 border border-zinc-300 dark:border-zinc-600 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 dark:bg-zinc-700 dark:bg-indigo-50">
                                     <option>less than 5 employees</option>
                                     <option>5-20 employees</option>
                                     <option>20-50 employees</option>
@@ -82,7 +82,7 @@
                             <div class="w-1/2">
                                 <label class="block text-zinc-700 dark:text-zinc-400">City</label>
                                 <select v-model="form.city" name="city"
-                                    class="w-full mt-1 p-2 border border-zinc-300 dark:border-zinc-600 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 dark:bg-zinc-700 dark:text-zinc-200">
+                                    class="w-full mt-1 p-2 border border-zinc-300 dark:border-zinc-600 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 dark:bg-zinc-700 dark:bg-indigo-50">
                                     <option>Nairobi</option>
                                     <option>Mombasa</option>
                                     <option>Kisumu</option>
@@ -92,7 +92,7 @@
                             <div class="w-1/2">
                                 <label class="block text-zinc-700 dark:text-zinc-400">Zone/Province</label>
                                 <input v-model="form.zone" type="text" name="address"
-                                    class="w-full mt-1 p-2 border border-zinc-300 dark:border-zinc-600 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 dark:bg-zinc-700 dark:text-zinc-200">
+                                    class="w-full mt-1 p-2 border border-zinc-300 dark:border-zinc-600 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 dark:bg-zinc-700 dark:bg-indigo-50">
                             </div>
                         </div>
                         <p class="text-zinc-600 dark:text-zinc-400 text-sm mt-4">By clicking on <strong>Start
@@ -201,7 +201,4 @@ export default {
         }
     }
 }
-definePageMeta({
-    layout: "accounting",
-})
 </script>

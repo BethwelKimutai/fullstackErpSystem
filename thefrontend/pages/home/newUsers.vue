@@ -126,4 +126,9 @@ const cancel = () => {
 }
 
 onMounted(fetchRolesAndCompanies)
+
+definePageMeta({   
+  layout: "home",
+})
+
 </script>
