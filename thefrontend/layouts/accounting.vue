@@ -56,7 +56,7 @@
                 <p class="text-sm text-zinc-600">{{ email }}</p>
               </div>
               <div class="border-t border-zinc-200"></div>
-              <nuxt-link to="" class="block px-4 py-2 hover:bg-zinc-100">My profile</nuxt-link>
+              <nuxt-link to="/profiledemo" class="block px-4 py-2 hover:bg-zinc-100">My profile</nuxt-link>
               <nuxt-link to="" class="block px-4 py-2 hover:bg-zinc-100">Account settings</nuxt-link>
               <nuxt-link to="" class="block px-4 py-2 hover:bg-zinc-100">My likes</nuxt-link>
               <nuxt-link to="" class="block px-4 py-2 hover:bg-zinc-100">Collections</nuxt-link>

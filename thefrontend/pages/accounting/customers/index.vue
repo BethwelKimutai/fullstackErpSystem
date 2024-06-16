@@ -19,7 +19,7 @@
                                 <p class="text-sm text-gray-600">Neque Dolor, fugiat non cum doloribus aperiam
                                     voluptates nostrum.</p>
                             </div>
-                            <nuxt-link to="" class="flex justify-between items-center group-hover:text-yellow-600">
+                            <nuxt-link to="/accounting/customers/invoices" class="flex justify-between items-center group-hover:text-yellow-600">
                                 <span class="text-sm">See Invoices</span>
                                 <span
                                     class="-translate-x-4 opacity-0 text-2xl transition duration-300 group-hover:opacity-100 group-hover:translate-x-0">&RightArrow;</span>
@@ -37,7 +37,7 @@
                                 <p class="text-sm text-gray-600">Neque Dolor, fugiat non cum doloribus aperiam
                                     voluptates nostrum.</p>
                             </div>
-                            <nuxt-link to="" class="flex justify-between items-center group-hover:text-yellow-600">
+                            <nuxt-link to="/accounting/customers/creditNotes" class="flex justify-between items-center group-hover:text-yellow-600">
                                 <span class="text-sm">See my Credits Notes</span>
                                 <span
                                     class="-translate-x-4 opacity-0 text-2xl transition duration-300 group-hover:opacity-100 group-hover:translate-x-0">&RightArrow;</span>
@@ -55,7 +55,7 @@
                                 <p class="text-sm text-gray-600">Neque Dolor, fugiat non cum doloribus aperiam
                                     voluptates nostrum.</p>
                             </div>
-                            <nuxt-link to="" class="flex justify-between items-center group-hover:text-yellow-600">
+                            <nuxt-link to="/accounting/customers/receipts" class="flex justify-between items-center group-hover:text-yellow-600">
                                 <span class="text-sm">See Receipts</span>
                                 <span
                                     class="-translate-x-4 opacity-0 text-2xl transition duration-300 group-hover:opacity-100 group-hover:translate-x-0">&RightArrow;</span>
@@ -73,7 +73,7 @@
                                 <p class="text-sm text-gray-600">Neque Dolor, fugiat non cum doloribus aperiam
                                     voluptates nostrum.</p>
                             </div>
-                            <nuxt-link to="" class="flex justify-between items-center group-hover:text-yellow-600">
+                            <nuxt-link to="/accounting/customers/amountsToSettle" class="flex justify-between items-center group-hover:text-yellow-600">
                                 <span class="text-sm">Amounts to Settle</span>
                                 <span
                                     class="-translate-x-4 opacity-0 text-2xl transition duration-300 group-hover:opacity-100 group-hover:translate-x-0">&RightArrow;</span>
@@ -96,7 +96,7 @@
                                 <p class="text-sm text-gray-600">Neque Dolor, fugiat non cum doloribus aperiam
                                     voluptates nostrum.</p>
                             </div>
-                            <nuxt-link to="" class="flex justify-between items-center group-hover:text-yellow-600">
+                            <nuxt-link to="/accounting/customers/payments" class="flex justify-between items-center group-hover:text-yellow-600">
                                 <span class="text-sm">See Payments</span>
                                 <span
                                     class="-translate-x-4 opacity-0 text-2xl transition duration-300 group-hover:opacity-100 group-hover:translate-x-0">&RightArrow;</span>
@@ -114,7 +114,7 @@
                                 <p class="text-sm text-gray-600">Neque Dolor, fugiat non cum doloribus aperiam
                                     voluptates nostrum.</p>
                             </div>
-                            <nuxt-link to="" class="flex justify-between items-center group-hover:text-yellow-600">
+                            <nuxt-link to="/accounting/customers/followUpReports" class="flex justify-between items-center group-hover:text-yellow-600">
                                 <span class="text-sm">See Follow up reports</span>
                                 <span
                                     class="-translate-x-4 opacity-0 text-2xl transition duration-300 group-hover:opacity-100 group-hover:translate-x-0">&RightArrow;</span>
@@ -132,7 +132,7 @@
                                 <p class="text-sm text-gray-600">Neque Dolor, fugiat non cum doloribus aperiam
                                     voluptates nostrum.</p>
                             </div>
-                            <nuxt-link to="" class="flex justify-between items-center group-hover:text-yellow-600">
+                            <nuxt-link to="/accounting/customers/products" class="flex justify-between items-center group-hover:text-yellow-600">
                                 <span class="text-sm">See products</span>
                                 <span
                                     class="-translate-x-4 opacity-0 text-2xl transition duration-300 group-hover:opacity-100 group-hover:translate-x-0">&RightArrow;</span>
@@ -150,7 +150,7 @@
                                 <p class="text-sm text-gray-600">Neque Dolor, fugiat non cum doloribus aperiam
                                     voluptates nostrum.</p>
                             </div>
-                            <nuxt-link to="" class="flex justify-between items-center group-hover:text-yellow-600">
+                            <nuxt-link to="/accounting/customers/customers" class="flex justify-between items-center group-hover:text-yellow-600">
                                 <span class="text-sm">See Customers</span>
                                 <span
                                     class="-translate-x-4 opacity-0 text-2xl transition duration-300 group-hover:opacity-100 group-hover:translate-x-0">&RightArrow;</span>

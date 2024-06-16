@@ -2,8 +2,9 @@ import random
 import string
 
 from django.db import models
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import AbstractUser, User
 from django.contrib.auth.base_user import BaseUserManager
+from django.utils import timezone
 
 
 class Company(models.Model):
@@ -21,6 +22,7 @@ class Company(models.Model):
     primaryInterest = models.CharField(max_length=255, default='None')
     is_approved = models.BooleanField(default=False)
     password = models.CharField(max_length=128, default=False)
+    # user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='company')
 
     def __str__(self):
         return self.name
@@ -67,4 +69,5 @@ class UserOTP(models.Model):
 
     def generate_otp(self):
         self.otp = ''.join(random.choices(string.digits, k=8))
+        self.created_at = timezone.now()  # Ensure the time is timezone-aware
         self.save()

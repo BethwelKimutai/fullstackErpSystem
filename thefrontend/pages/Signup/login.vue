@@ -1,5 +1,5 @@
 <template>
-  <div class="fixed inset-0 flex items-center justify-center bg-gray-500 bg-opacity-75">
+  <div ref="modalContainer" @click.self="closeModal" class="fixed inset-0 flex items-center justify-center bg-gray-500 bg-opacity-75">
     <form @submit.prevent="submit" class="w-full max-w-lg px-8">
       <div class="bg-white px-10 py-8 rounded-xl w-screen shadow-md max-w-sm">
         <img class="h-14 mb-4 mx-auto" src="/public/logoTrack.drawio.png" alt="">
@@ -53,6 +53,7 @@ const username = ref('');
 const password = ref('');
 const alertMessage = ref('');
 const router = useRouter();
+const modalContainer = ref(null);
 
 const submit = async () => {
   try {
@@ -70,17 +71,22 @@ const submit = async () => {
 
     const data = await response.json();
 
-    alert('Login was successful.');
+    const userDetails = data.user_details;
 
-    const userDetails = data.user_details; 
-
-    if (userDetails.is_manager) {
+    if (userDetails.is_superuser) {
+      alert('Login was successful.');
+      router.push('/superuser');
+    }else if (userDetails.is_staff) {
+      alert('Login was successful.');
       router.push('/home/manager');
-    } else if (userDetails.is_accounting_manager) {
+    }else if (userDetails.is_accounting_manager) {
+      alert('Login was successful.');
       router.push('/accounting');
     } else if (userDetails.is_inventory_manager) {
+      alert('Login was successful.');
       router.push('/inventory');
     } else if (userDetails.is_purchase_manager) {
+      alert('Login was successful.');
       router.push('/purchase');
     } else {
       alertMessage.value = 'Invalid role';
@@ -90,6 +96,10 @@ const submit = async () => {
     console.error("An error occurred:", error);
     alertMessage.value = 'An error occurred: ' + error.message;
   } 
+}
+
+const closeModal = () => {
+  modalContainer.value.style.display = 'none';
 }
 </script>
 

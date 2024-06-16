@@ -10,28 +10,28 @@
                         <div>
                             <label class="block text-zinc-700 dark:text-zinc-400">Full Name</label>
                             <input v-model="form.name" type="text" name="name"
-                                class="w-full mt-1 p-2 border border-zinc-300 dark:border-zinc-600 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 dark:bg-zinc-700 dark:bg-indigo-50">
+                                class="w-full mt-1 p-2 border border-zinc-300 dark:border-zinc-600 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 dark:bg-indigo-50">
                         </div>
                         <div>
                             <label class="block text-zinc-700 dark:text-zinc-400">Email</label>
                             <input v-model="form.email" type="email" name="email"
-                                class="w-full mt-1 p-2 border border-zinc-300 dark:border-zinc-600 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 dark:bg-zinc-700 dark:bg-indigo-50">
+                                class="w-full mt-1 p-2 border border-zinc-300 dark:border-zinc-600 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 dark:bg-indigo-50">
                         </div>
                         <div>
                             <label class="block text-zinc-700 dark:text-zinc-400">Password</label>
                             <input v-model="form.password" type="password" name="password"
-                                class="w-full mt-1 p-2 border border-zinc-300 dark:border-zinc-600 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 dark:bg-zinc-700 dark:bg-indigo-50">
+                                class="w-full mt-1 p-2 border border-zinc-300 dark:border-zinc-600 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 dark:bg-indigo-50">
                         </div>
                         <div>
                             <label class="block text-zinc-700 dark:text-zinc-400">Company Name</label>
                             <input v-model="form.companyName" type="text" name="companyName"
-                                class="w-full mt-1 p-2 border border-zinc-300 dark:border-zinc-600 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 dark:bg-zinc-700 dark:bg-indigo-50">
+                                class="w-full mt-1 p-2 border border-zinc-300 dark:border-zinc-600 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 dark:bg-indigo-50">
                         </div>
                         <div class="flex space-x-4">
                             <div class="w-1/2">
                                 <label class="block text-zinc-700 dark:text-zinc-400">Country</label>
                                 <select v-model="form.country" name="country"
-                                    class="w-full mt-1 p-2 border border-zinc-300 dark:border-zinc-600 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 dark:bg-zinc-700 dark:bg-indigo-50">
+                                    class="w-full mt-1 p-2 border border-zinc-300 dark:border-zinc-600 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 dark:bg-indigo-50">
                                     <option>Kenya</option>
                                     <option>Rwanda</option>
                                     <option>Uganda</option>
@@ -40,27 +40,27 @@
                             </div>
                             <div class="w-1/2">
                                 <label class="block text-zinc-700 dark:text-zinc-400">Phone Number</label>
-                                <input v-model="form.number" type="text" name="number" class="w-full mt-1 p-2 border border-zinc-300 dark:border-zinc-600 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 dark:bg-zinc-700 dark:bg-indigo-50">
+                                <input v-model="form.number" type="text" name="number" class="w-full mt-1 p-2 border border-zinc-300 dark:border-zinc-600 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 dark:bg-indigo-50">
 
                             </div>
                             <div class="w-1/2">
                                 <label class="block text-zinc-700 dark:text-zinc-400">Address</label>
                                 <input v-model="form.address" type="text" name="address"
-                                    class="w-full mt-1 p-2 border border-zinc-300 dark:border-zinc-600 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 dark:bg-zinc-700 dark:bg-indigo-50">
+                                    class="w-full mt-1 p-2 border border-zinc-300 dark:border-zinc-600 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 dark:bg-indigo-50">
                             </div>
                         </div>
                         <div class="flex space-x-4">
                             <div class="w-1/2">
                                 <label class="block text-zinc-700 dark:text-zinc-400">Language</label>
                                 <select v-model="form.language" name="language"
-                                    class="w-full mt-1 p-2 border border-zinc-300 dark:border-zinc-600 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 dark:bg-zinc-700 dark:bg-indigo-50">
+                                    class="w-full mt-1 p-2 border border-zinc-300 dark:border-zinc-600 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 dark:bg-indigo-50">
                                     <option>English</option>
                                 </select>
                             </div>
                             <div class="w-1/2">
                                 <label class="block text-zinc-700 dark:text-zinc-400">Primary Interest</label>
                                 <select v-model="form.primaryInterest" name="primaryInterest"
-                                    class="w-full mt-1 p-2 border border-zinc-300 dark:border-zinc-600 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 dark:bg-zinc-700 dark:bg-indigo-50">
+                                    class="w-full mt-1 p-2 border border-zinc-300 dark:border-zinc-600 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 dark:bg-indigo-50">
                                     <option>Use it in my Company</option>
                                     <option>Offer JikoTrack services to other Companies</option>
                                     <option>I am a Student</option>
@@ -71,7 +71,7 @@
                             <div class="w-1/2">
                                 <label class="block text-zinc-700 dark:text-zinc-400">Company Size</label>
                                 <select v-model="form.companySize" name="companySize"
-                                    class="w-full mt-1 p-2 border border-zinc-300 dark:border-zinc-600 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 dark:bg-zinc-700 dark:bg-indigo-50">
+                                    class="w-full mt-1 p-2 border border-zinc-300 dark:border-zinc-600 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 dark:bg-indigo-50">
                                     <option>less than 5 employees</option>
                                     <option>5-20 employees</option>
                                     <option>20-50 employees</option>
@@ -82,7 +82,7 @@
                             <div class="w-1/2">
                                 <label class="block text-zinc-700 dark:text-zinc-400">City</label>
                                 <select v-model="form.city" name="city"
-                                    class="w-full mt-1 p-2 border border-zinc-300 dark:border-zinc-600 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 dark:bg-zinc-700 dark:bg-indigo-50">
+                                    class="w-full mt-1 p-2 border border-zinc-300 dark:border-zinc-600 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 dark:bg-indigo-50">
                                     <option>Nairobi</option>
                                     <option>Mombasa</option>
                                     <option>Kisumu</option>
@@ -92,7 +92,7 @@
                             <div class="w-1/2">
                                 <label class="block text-zinc-700 dark:text-zinc-400">Zone/Province</label>
                                 <input v-model="form.zone" type="text" name="address"
-                                    class="w-full mt-1 p-2 border border-zinc-300 dark:border-zinc-600 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 dark:bg-zinc-700 dark:bg-indigo-50">
+                                    class="w-full mt-1 p-2 border border-zinc-300 dark:border-zinc-600 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 dark:bg-indigo-50">
                             </div>
                         </div>
                         <p class="text-zinc-600 dark:text-zinc-400 text-sm mt-4">By clicking on <strong>Start
@@ -101,7 +101,7 @@
                                 class="text-teal-600 dark:text-teal-400">Privacy Policy</a>.</p>
                         <div class="flex space-x-4 mt-6">
                             <button type="button"
-                                class="flex-1 bg-white dark:bg-zinc-700 border border-teal-600 dark:border-teal-400 text-teal-600 dark:text-teal-400 p-2 rounded-md hover:bg-zinc-50 dark:hover:bg-zinc-600">Change
+                                class="flex-1 bg-white border border-teal-600 dark:border-teal-400 text-teal-600 dark:text-teal-400 p-2 rounded-md hover:bg-zinc-50 dark:hover:bg-zinc-600">Change
                                 apps selection</button>
                             <button type="submit"
                                 class="flex-1 bg-teal-600 dark:bg-teal-400 text-white p-2 rounded-md hover:bg-teal-700 dark:hover:bg-teal-500">Start
@@ -110,7 +110,7 @@
                     </form>
                 </div>
                 <div class="mt-8 lg:mt-0 lg:ml-8 w-full lg:w-1/3">
-                    <div class="bg-white dark:bg-zinc-800 p-6 rounded-lg shadow-md">
+                    <div class="bg-white dark:bg-indigo-500 p-6 rounded-lg shadow-md">
                         <div class="flex items-center space-x-4">
                             <img src="https://placehold.co/40x40" alt="SAP Logo" class="w-10 h-10 rounded-full">
                             <div>
@@ -122,7 +122,7 @@
                         <p class="mt-4 text-zinc-700 dark:text-zinc-300">Have you found the secret of supply chain
                             efficiency in disruption? Read the Oxford Economics Study to see what we learned</p>
                     </div>
-                    <div class="bg-white dark:bg-zinc-800 p-6 rounded-lg shadow-md mt-6">
+                    <div class="bg-white dark:bg-indigo-500 p-6 rounded-lg shadow-md mt-6">
                         <div class="flex items-center space-x-4">
                             <img src="https://placehold.co/40x40" alt="User Avatar" class="w-10 h-10 rounded-full">
                             <div>

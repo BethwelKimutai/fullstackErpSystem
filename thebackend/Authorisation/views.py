@@ -1,4 +1,5 @@
 import random
+import string
 from datetime import datetime, timedelta
 
 import phonenumbers
@@ -8,6 +9,7 @@ from django.core.mail import send_mail
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
+from django.utils.crypto import get_random_string
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt, ensure_csrf_cookie
 from pip._internal.utils import logging
@@ -21,7 +23,7 @@ from simplejwt import jwt
 
 from .models import Company, User, UserOTP
 from .serializers import CompanySerializer, UserSerializer, UserDetailsSerializer
-from django.core.exceptions import ValidationError
+from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from phonenumbers import parse, format_number, region_code_for_number
 from pycountry import countries
 import jwt
@@ -423,5 +425,97 @@ class UserViewSet(viewsets.ModelViewSet):
                 user_list.append(user_details)
 
             return Response(user_list, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({"message": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+    @action(detail=False, methods=['post'])
+    def newPassword(self, request):
+        try:
+            new_password = request.data.get('new_password')
+            confirm_password = request.data.get('confirm_password')
+
+            if not new_password or not confirm_password:
+                raise ValidationError('Both new password and confirm password are required.')
+
+            if new_password != confirm_password:
+                raise ValidationError('Passwords do not match.')
+
+            # Locate user by username or email
+            username_or_email = request.data.get('username') or request.data.get('email')
+            if not username_or_email:
+                raise ValidationError('Username or email is required.')
+
+            user = User.objects.filter(Q(username=username_or_email) | Q(email=username_or_email)).first()
+            if not user:
+                return Response({'message': 'User not found.'}, status=status.HTTP_404_NOT_FOUND)
+
+            # Update the user's password
+            user.password = make_password(new_password)
+            user.save()
+
+            return Response({'message': 'Password updated successfully.'}, status=status.HTTP_200_OK)
+        except ValidationError as ve:
+            return Response({'message': str(ve)}, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+    @action(detail=False, methods=['post'])
+    def forgotPasswordOtpVerification(self, request):
+        try:
+            otp = request.data.get('otp')
+            if not otp:
+                return Response({'message': 'OTP is required'}, status=status.HTTP_400_BAD_REQUEST)
+
+            user_otp = UserOTP.objects.filter(otp=otp).first()
+
+            if not user_otp:
+                return Response({'message': 'User not found or OTP is incorrect'}, status=status.HTTP_404_NOT_FOUND)
+
+            # Check if OTP has expired (OTP is valid for 10 minutes)
+            otp_age = timezone.now() - user_otp.created_at
+            if otp_age.total_seconds() > 600:  # 600 seconds = 10 minutes
+                return Response({'message': 'OTP has expired'}, status=status.HTTP_400_BAD_REQUEST)
+
+            user = user_otp.user
+            user.is_active = True
+            user.save()
+
+            # Clean up the OTP after successful verification
+            user_otp.delete()
+
+            return Response({'message': 'Account verified successfully'}, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+    @action(detail=False, methods=['post'])
+    def forgotPassword(self, request):
+        try:
+            username_or_email = request.data.get('username') or request.data.get('email')
+            if not username_or_email:
+                raise ValidationError('Username or email is required')
+
+            user = User.objects.filter(Q(username=username_or_email) | Q(email=username_or_email)).first()
+            if not user:
+                return Response({'status': 'user not found'}, status=status.HTTP_404_NOT_FOUND)
+
+            # Generate random 6-digit OTP
+            otp = ''.join(random.choices(string.digits, k=6))
+
+            # Create or update the UserOTP entry
+            user_otp, created = UserOTP.objects.get_or_create(user=user)
+            user_otp.otp = otp
+            user_otp.created_at = timezone.now()  # Ensure the time is timezone-aware
+            user_otp.save()
+
+            # Send email with OTP
+            send_mail(
+                'Password Reset Request',
+                f'Your one-time password (OTP) to reset your password is: {otp}',
+                'from@example.com',
+                [user.email],
+                fail_silently=False,
+            )
+
+            return Response({'status': 'otp sent'}, status=status.HTTP_200_OK)
         except Exception as e:
             return Response({"message": str(e)}, status=status.HTTP_400_BAD_REQUEST)

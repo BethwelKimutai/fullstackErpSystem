@@ -4,7 +4,7 @@
             <div class="dark:bg-gray-800 text-white">
                 <div class="container mx-auto flex justify-between items-center p-4">
                     <div class="flex items-center">
-                        <nuxt-link to="/accounting" class="flex items-center space-x-3 rtl:space-x-reverse">
+                        <nuxt-link to="/inventory" class="flex items-center space-x-3 rtl:space-x-reverse">
                             <img src="/public/logoTrack.drawio.png" class="h-8" alt="Logo" />
                             <span
                                 class="self-center text-2xl font-semibold whitespace-nowrap text-yellow-500">JikoTrack</span>
@@ -48,7 +48,7 @@
                                 <p class="text-sm text-zinc-600">{{ email }}</p>
                             </div>
                             <div class="border-t border-zinc-200"></div>
-                            <nuxt-link to="" class="block px-4 py-2 hover:bg-zinc-100">My profile</nuxt-link>
+                            <nuxt-link to="/profiledemo" class="block px-4 py-2 hover:bg-zinc-100">My profile</nuxt-link>
                             <nuxt-link to="" class="block px-4 py-2 hover:bg-zinc-100">Account settings</nuxt-link>
                             <nuxt-link to="" class="block px-4 py-2 hover:bg-zinc-100">My likes</nuxt-link>
                             <nuxt-link to="" class="block px-4 py-2 hover:bg-zinc-100">Collections</nuxt-link>
