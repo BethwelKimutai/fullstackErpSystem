@@ -121,6 +121,10 @@ const approveCompany = async (companyId) => {
 }
 
 onMounted(fetchCompanies)
+
+definePageMeta({
+    layout: 'home',
+})
 </script>
 
 <style scoped></style>

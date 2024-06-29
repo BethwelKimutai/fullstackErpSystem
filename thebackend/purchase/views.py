@@ -1,47 +1,172 @@
+import uuid
+
+import jwt
 from django.http import HttpResponse
+from django.utils import timezone
 from rest_framework import viewsets, status
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from rest_framework.decorators import action
+from rest_framework.decorators import action, permission_classes
 from django.core.mail import EmailMessage
 from django.template.loader import render_to_string
 from django.conf import settings
 from io import BytesIO
 from reportlab.pdfgen import canvas
-from .models import Vendor, RequestForQuotation, PurchaseOrder
-from .serializers import VendorSerializer, RequestForQuotationSerializer, PurchaseOrderSerializer
+from weasyprint import HTML
+
+from Authorisation.models import Company
+from .models import Vendor, RequestForQuotation, PurchaseOrder, VendorPriceList
+from .serializers import VendorSerializer, RequestForQuotationSerializer, PurchaseOrderSerializer, \
+    VendorCreateSerializer, VendorPriceListSerializer
+import logging
+
+logger = logging.getLogger(__name__)
+
 
 class VendorViewSet(viewsets.ModelViewSet):
     queryset = Vendor.objects.all()
     serializer_class = VendorSerializer
 
-    @action(detail=False, methods=['post'])
-    def create_vendor(self, request):
-        serializer = VendorSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    def decode_jwt(self, token):
+        try:
+            payload = jwt.decode(token, 'secret', algorithms=['HS256'])
+            return payload
+        except jwt.ExpiredSignatureError:
+            raise Exception("Token has expired")
+        except jwt.InvalidTokenError:
+            raise Exception("Invalid token")
 
     @action(detail=False, methods=['get'])
     def get_vendors(self, request):
-        vendors = Vendor.objects.all()
-        serializer = VendorSerializer(vendors, many=True)
-        return Response(serializer.data)
+        try:
+            token = request.COOKIES.get('jwt')
+            if not token:
+                return Response({"message": "JWT token not found in cookies"}, status=status.HTTP_400_BAD_REQUEST)
+
+            decoded_token = self.decode_jwt(token)
+            company_id = decoded_token.get('company_id')
+            if not company_id:
+                return Response({"message": "Company ID not found in token"}, status=status.HTTP_400_BAD_REQUEST)
+
+            # Convert company_id to UUID if necessary
+            try:
+                company_id = str(uuid.UUID(company_id))
+            except ValueError as e:
+                return Response({"message": f"Invalid company_id format: {str(e)}"}, status=status.HTTP_400_BAD_REQUEST)
+
+            vendors = Vendor.objects.filter(vendor_company=company_id)
+            serialized_vendors = []
+
+            for vendor in vendors:
+                serialized_vendor = {
+                    'id': vendor.id,
+                    'contact_country': vendor.contact_country,
+                    'tax_id': vendor.tax_id,
+                    'email': vendor.email
+                }
+
+                if vendor.type == 'individual':
+                    serialized_vendor['name'] = vendor.name
+                    serialized_vendor['mobile'] = vendor.mobile
+                elif vendor.type == 'company':
+                    serialized_vendor['company_name'] = vendor.company_name
+                    serialized_vendor['phone'] = vendor.phone
+
+                serialized_vendors.append(serialized_vendor)
+
+            return Response(serialized_vendors)
+
+        except Exception as e:
+            return Response({"message": f"Error {str(e)}"})
+
+    @action(detail=False, methods=['post'])
+    def create_vendor(self, request):
+        try:
+            token = request.COOKIES.get('jwt')
+            if not token:
+                return Response({"message": "JWT token not found in cookies"}, status=status.HTTP_400_BAD_REQUEST)
+
+            decoded_token = self.decode_jwt(token)
+            company_id = decoded_token.get('company_id')
+            if not company_id:
+                return Response({"message": "Company ID not found in token"}, status=status.HTTP_400_BAD_REQUEST)
+
+            # Convert company_id to UUID if necessary
+            try:
+                company_id = str(uuid.UUID(company_id))
+            except ValueError as e:
+                return Response({"message": f"Invalid company_id format: {str(e)}"}, status=status.HTTP_400_BAD_REQUEST)
+
+            # Fetch the Company instance
+            try:
+                company = Company.objects.get(id=company_id)
+            except Company.DoesNotExist:
+                return Response({"message": "Company not found"}, status=status.HTTP_404_NOT_FOUND)
+
+            serializer = VendorCreateSerializer(data=request.data)
+            if serializer.is_valid():
+                vendor_data = serializer.validated_data
+                vendor_type = vendor_data['type']
+
+                if vendor_type == 'individual':
+                    existing_vendor = Vendor.objects.filter(
+                        type='individual',
+                        name=vendor_data['name'],
+                        company_name=vendor_data['company_name'],
+                        vendor_company=company
+                    ).exists()
+                elif vendor_type == 'company':
+                    existing_vendor = Vendor.objects.filter(
+                        type='company',
+                        company_name=vendor_data['company_name'],
+                        vendor_company=company
+                    ).exists()
+
+                if existing_vendor:
+                    return Response(
+                        {"message": "Vendor already exists"},
+                        status=status.HTTP_400_BAD_REQUEST
+                    )
+
+                vendor_data['vendor_company'] = company
+                # Debugging statement before saving
+                print(f"vendor_data before saving: {vendor_data}")
+
+                serializer.save()
+                return Response({"message": "Vendor successfully created"}, status=status.HTTP_201_CREATED)
+
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            return Response({"message": f"Error {str(e)}"})
+
 
 class RequestForQuotationViewSet(viewsets.ModelViewSet):
     queryset = RequestForQuotation.objects.all()
     serializer_class = RequestForQuotationSerializer
 
+    def generate_reference(prefix, model):
+        year = timezone.now().year
+        month = timezone.now().month
+        count = model.objects.filter(created_at__year=year, created_at__month=month).count() + 1
+        return f"{prefix}/{year}/{month:02d}/{count:04d}"
+
+    # RFQ creation method
     @action(detail=False, methods=['post'])
+    @permission_classes([IsAuthenticated])
     def create_rfq(self, request):
-        data = request.data
-        data['company'] = request.user.company.id
-        data['buyer'] = request.user.id
-        serializer = RequestForQuotationSerializer(data=data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            data = request.data
+            data['company'] = request.user.company.id
+            data['buyer'] = request.user.id
+            data['reference'] = self.generate_reference('RFQ', RequestForQuotation)
+            serializer = RequestForQuotationSerializer(data=data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            logger.error(f"Error creating RFQ: {e}", exc_info=True)
+            return Response({'detail': 'Internal server error'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     @action(detail=False, methods=['get'])
     def get_rfqs(self, request):
@@ -67,6 +192,12 @@ class RequestForQuotationViewSet(viewsets.ModelViewSet):
     def _generate_pdf(self, rfq, return_as_file=False):
         buffer = BytesIO()
         p = canvas.Canvas(buffer)
+
+        # Include company logo if available
+        if hasattr(rfq.company, 'logo') and rfq.company.logo.image:
+            logo_path = rfq.company.logo.image.path
+            p.drawImage(logo_path, 400, 750, width=100, height=50)
+
         p.drawString(100, 750, f"Request for Quotation: {rfq.reference}")
         p.drawString(100, 730, f"Vendor: {rfq.vendor.company_name}")
         p.drawString(100, 710, f"Product: {rfq.product.name}")
@@ -91,23 +222,35 @@ class RequestForQuotationViewSet(viewsets.ModelViewSet):
             email.send()
             return True
         except Exception as e:
-            print(e)
+            logger.error(f"Error sending email for RFQ {rfq.reference}: {e}")
             return False
+
 
 class PurchaseOrderViewSet(viewsets.ModelViewSet):
     queryset = PurchaseOrder.objects.all()
     serializer_class = PurchaseOrderSerializer
 
+    def generate_reference(prefix, model):
+        year = timezone.now().year
+        month = timezone.now().month
+        count = model.objects.filter(created_at__year=year, created_at__month=month).count() + 1
+        return f"{prefix}/{year}/{month:02d}/{count:04d}"
+
     @action(detail=False, methods=['post'])
     def create_po(self, request):
-        data = request.data
-        data['company'] = request.user.company.id
-        data['buyer'] = request.user.id
-        serializer = PurchaseOrderSerializer(data=data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            data = request.data
+            data['company'] = request.user.company.id
+            data['buyer'] = request.user.id
+            data['reference'] = self.generate_reference('PO', PurchaseOrder)
+            serializer = PurchaseOrderSerializer(data=data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            logger.error(f"Error creating PO: {e}")
+            return Response({'detail': 'Internal server error'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     @action(detail=False, methods=['get'])
     def get_pos(self, request):
@@ -118,21 +261,59 @@ class PurchaseOrderViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=['get'])
     def print_po(self, request, pk=None):
         po = self.get_object()
-        response = self._generate_pdf(po)
+        company = request.user.company
+        html_string = render_to_string('purchase_order.html', {
+            'po': po,
+            'company_name': company.name,
+            'company_address': company.address,
+            'company_phone': company.phone,
+            'company_email': company.email,
+            'company_website': company.website,
+            'company_logo': company.logo.image.url if hasattr(company, 'logo') else '',
+            'company_footer': company.footer,
+        })
+        pdf_file = HTML(string=html_string).write_pdf()
+
+        response = HttpResponse(pdf_file, content_type='application/pdf')
+        response['Content-Disposition'] = f'attachment; filename="PO_{po.reference}.pdf"'
         return response
 
     @action(detail=True, methods=['post'])
     def email_po(self, request, pk=None):
         po = self.get_object()
-        pdf_file = self._generate_pdf(po, return_as_file=True)
-        email_sent = self._send_email(po, pdf_file)
-        if email_sent:
+        company = request.user.company
+        html_string = render_to_string('purchase_order.html', {
+            'po': po,
+            'company_name': company.name,
+            'company_address': company.address,
+            'company_phone': company.phone,
+            'company_email': company.email,
+            'company_website': company.website,
+            'company_logo': company.logo.image.url if hasattr(company, 'logo') else '',
+            'company_footer': company.footer,
+        })
+        pdf_file = HTML(string=html_string).write_pdf()
+
+        subject = f"Purchase Order: {po.reference}"
+        body = f"Dear {po.vendor.company_name},\n\nPlease find attached the Purchase Order.\n\nBest regards,\n{company.name}"
+        email = EmailMessage(subject, body, settings.DEFAULT_FROM_EMAIL, [po.vendor.email])
+        email.attach(f"PO_{po.reference}.pdf", pdf_file, 'application/pdf')
+        try:
+            email.send()
             return Response({'status': 'email sent'}, status=status.HTTP_200_OK)
-        return Response({'status': 'email failed'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        except Exception as e:
+            logger.error(f"Error sending email for PO {po.reference}: {e}")
+            return Response({'status': 'email failed'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     def _generate_pdf(self, po, return_as_file=False):
         buffer = BytesIO()
         p = canvas.Canvas(buffer)
+
+        # Include company logo if available
+        if hasattr(po.company, 'logo') and po.company.logo.image:
+            logo_path = po.company.logo.image.path
+            p.drawImage(logo_path, 400, 750, width=100, height=50)
+
         p.drawString(100, 750, f"Purchase Order: {po.reference}")
         p.drawString(100, 730, f"Vendor: {po.vendor.company_name}")
         p.drawString(100, 710, f"Product: {po.product.name}")
@@ -157,5 +338,50 @@ class PurchaseOrderViewSet(viewsets.ModelViewSet):
             email.send()
             return True
         except Exception as e:
-            print(e)
+            logger.error(f"Error sending email for PO {po.reference}: {e}")
             return False
+
+class VendorPriceListViewSet(viewsets.ModelViewSet):
+    serializer_class = VendorPriceListSerializer
+
+    def get_queryset(self):
+        user = self.request.user
+        return VendorPriceList.objects.filter(product__company=user.company)
+
+    @action(detail=False, methods=['post'])
+    def create_vendor_price_list(self, request):
+        try:
+            token = request.COOKIES.get('jwt')
+            if not token:
+                return Response({"message": "JWT token not found in cookies"}, status=status.HTTP_400_BAD_REQUEST)
+
+            decoded_token = self.decode_jwt(token)
+            company_id = decoded_token.get('company_id')
+            if not company_id:
+                return Response({"message": "Company ID not found in token"}, status=status.HTTP_400_BAD_REQUEST)
+
+            try:
+                company_id = str(uuid.UUID(company_id))
+            except ValueError as e:
+                return Response({"message": f"Invalid company_id format: {str(e)}"}, status=status.HTTP_400_BAD_REQUEST)
+
+            try:
+                company = Company.objects.get(id=company_id)
+            except Company.DoesNotExist:
+                return Response({"message": "Company not found"}, status=status.HTTP_404_NOT_FOUND)
+
+            data = request.data
+            data['company_id'] = company_id
+            serializer = VendorPriceListSerializer(data=data)
+
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            return Response({"message": f"An error occurred: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    @action(detail=False, methods=['get'])
+    def get_vendor_price_lists(self, request):
+        price_lists = self.get_queryset()
+        serializer = VendorPriceListSerializer(price_lists, many=True)
+        return Response(serializer.data)

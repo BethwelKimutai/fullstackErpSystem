@@ -1,15 +1,16 @@
 from rest_framework import serializers
 from django.contrib.auth.hashers import make_password
-from .models import Company, User
+from .models import Company, User, ProfilePicture
 
 
 class CompanySerializer(serializers.ModelSerializer):
+    id = serializers.UUIDField(format='hex', read_only=True)
     password = serializers.CharField(write_only=True)
 
     class Meta:
         model = Company
         fields = ['id', 'name', 'email', 'is_approved', 'password', 'address', 'country', 'number', 'city', 'zone',
-                  'language', 'primaryInterest', 'companySize','companyName']
+                  'language', 'primaryInterest', 'companySize', 'companyName']
 
     def create(self, validated_data):
         validated_data['password'] = make_password(validated_data['password'])
@@ -17,12 +18,14 @@ class CompanySerializer(serializers.ModelSerializer):
 
 
 class UserSerializer(serializers.ModelSerializer):
+    id = serializers.UUIDField(format='hex', read_only=True)
     password = serializers.CharField(write_only=True)
 
     class Meta:
         model = User
         fields = ['id', 'username', 'email', 'password', 'is_manager', 'company', 'is_accounting_manager',
-                  'is_inventory_manager', 'is_purchase_manager', 'is_active', 'date_joined']
+                  'is_inventory_manager', 'is_purchase_manager', 'is_active', 'date_joined', 'first_name', 'last_name',
+                  'address1', 'address2', 'email2', 'country', 'state', 'zip_code', 'profile_picture']
 
     def create(self, validated_data):
         validated_data['password'] = make_password(validated_data['password'])
@@ -69,3 +72,20 @@ class UserDetailsSerializer(serializers.Serializer):
 
     def get_company_name(self, obj):
         return obj.company.companyName if obj.company else None
+
+
+class PasswordChangeSerializer(serializers.Serializer):
+    current_password = serializers.CharField(required=True)
+    new_password = serializers.CharField(required=True)
+    confirm_password = serializers.CharField(required=True)
+
+    def validate(self, data):
+        if data['new_password'] != data['confirm_password']:
+            raise serializers.ValidationError("New passwords do not match")
+        return data
+
+
+class ProfilePictureSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ProfilePicture
+        fields = ['image']

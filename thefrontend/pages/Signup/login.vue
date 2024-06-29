@@ -76,7 +76,7 @@ const submit = async () => {
     if (userDetails.is_superuser) {
       alert('Login was successful.');
       router.push('/superuser');
-    }else if (userDetails.is_staff) {
+    }else if (userDetails.is_manager) {
       alert('Login was successful.');
       router.push('/home/manager');
     }else if (userDetails.is_accounting_manager) {

@@ -1,6 +1,8 @@
 import random
 import string
+import uuid
 
+from PIL import Image
 from django.db import models
 from django.contrib.auth.models import AbstractUser, User
 from django.contrib.auth.base_user import BaseUserManager
@@ -8,6 +10,7 @@ from django.utils import timezone
 
 
 class Company(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=255)
     email = models.EmailField(unique=True)
     country = models.CharField(max_length=255, blank=True, null=True)
@@ -22,6 +25,7 @@ class Company(models.Model):
     primaryInterest = models.CharField(max_length=255, default='None')
     is_approved = models.BooleanField(default=False)
     password = models.CharField(max_length=128, default=False)
+
     # user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='company')
 
     def __str__(self):
@@ -49,12 +53,20 @@ class UserManager(BaseUserManager):
 
 
 class User(AbstractUser):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     company = models.ForeignKey(Company, on_delete=models.CASCADE, null=True, blank=True)
     is_manager = models.BooleanField(default=False)
     is_accounting_manager = models.BooleanField(default=False)
     is_inventory_manager = models.BooleanField(default=False)
     is_purchase_manager = models.BooleanField(default=False)
-    password = models.CharField(max_length=128)
+    address1 = models.CharField(max_length=255, null=True, blank=True)
+    address2 = models.CharField(max_length=255, null=True, blank=True)
+    email2 = models.EmailField(null=True, blank=True)
+    country = models.CharField(max_length=50, null=True, blank=True)
+    state = models.CharField(max_length=50, null=True, blank=True)
+    zip_code = models.CharField(max_length=20, null=True, blank=True)
+    first_name = models.CharField(max_length=255, null=True, blank=True)
+    last_name = models.CharField(max_length=255, null=True, blank=True)
 
     objects = UserManager()
 
@@ -71,3 +83,35 @@ class UserOTP(models.Model):
         self.otp = ''.join(random.choices(string.digits, k=8))
         self.created_at = timezone.now()  # Ensure the time is timezone-aware
         self.save()
+
+
+class ProfilePicture(models.Model):
+    user = models.OneToOneField('User', on_delete=models.CASCADE, related_name='profile_picture')
+    image = models.ImageField(upload_to='profile_pictures/')
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        self.compress_image()
+
+    def compress_image(self):
+        img = Image.open(self.image.path)
+        if img.height > 300 or img.width > 300:
+            output_size = (300, 300)
+            img.thumbnail(output_size)
+            img.save(self.image.path)
+
+
+class CompanyLogo(models.Model):
+    company = models.OneToOneField('Company', on_delete=models.CASCADE, related_name='logo')
+    image = models.ImageField(upload_to='company_logos/')
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        self.compress_image()
+
+    def compress_image(self):
+        img = Image.open(self.image.path)
+        if img.height > 300 or img.width > 300:
+            output_size = (300, 300)
+            img.thumbnail(output_size)
+            img.save(self.image.path)

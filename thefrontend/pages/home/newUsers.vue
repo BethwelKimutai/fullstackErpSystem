@@ -30,7 +30,7 @@
                 <div class="md:col-span-5">
                   <label for="role">Role</label>
                   <select v-model="user.role" id="role" class="h-10 border mt-1 rounded px-4 w-full bg-gray-50">
-                    <option v-for="role in roles" :key="role.value" :value="role.value">{{ role.label }}</option>
+                    <option v-for="role in roles" :key="role.name" :value="role.name">{{ role.name }}</option>
                   </select>
                 </div>
 
@@ -67,13 +67,12 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import { useRouter, useRoute } from 'vue-router'
+import { useRouter } from 'vue-router'
 
-const user = ref({})
+const user = ref({ username: '', email: '', role: '', company: '', password: '' })
 const roles = ref([])
 const companies = ref([])
 const router = useRouter()
-const route = useRoute()
 
 const fetchRolesAndCompanies = async () => {
   try {
@@ -100,6 +99,8 @@ const fetchRolesAndCompanies = async () => {
 
 const createUser = async () => {
   try {
+    console.log("User data before sending:", user.value)  
+
     const response = await fetch('http://127.0.0.1:8000/backend/users/createuser/', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -111,24 +112,20 @@ const createUser = async () => {
       throw new Error('Network response was not ok')
     }
 
-    await response.json()
+    const result = await response.json()
+    console.log("API response:", result)  
 
-    if (response === 'user created'){
-        router.push('/home/users')
+    if (result.status === 'user created') {
+      router.push('/home/userDetails/users')
     }
   } catch (e) {
-    console.error('Failed to update user', e)
+    console.error('Failed to create user', e)
   }
 }
 
 const cancel = () => {
-  router.push('/home/users')
+  router.push('/home/userDetails/users')
 }
 
 onMounted(fetchRolesAndCompanies)
-
-definePageMeta({   
-  layout: "home",
-})
-
 </script>

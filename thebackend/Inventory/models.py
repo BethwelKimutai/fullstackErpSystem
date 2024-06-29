@@ -1,17 +1,26 @@
+import uuid
+
 from django.db import models
 from django.contrib.auth.models import User
+
+import settings
 from Authorisation.models import Company
 
 
 class ProductCategory(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=255)
     description = models.TextField(null=True, blank=True)
+
 
 class ProductTemplate(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=255)
     description = models.TextField(null=True, blank=True)
 
+
 class Product(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=255)
     product_type = models.CharField(max_length=255)
     invoice_policy = models.CharField(max_length=255)
@@ -26,14 +35,18 @@ class Product(models.Model):
     product_template = models.ForeignKey(ProductTemplate, on_delete=models.CASCADE)
     company = models.ForeignKey(Company, on_delete=models.CASCADE)
 
+
 class ReplenishOrder(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     order_quantity = models.PositiveIntegerField()
     order_date = models.DateField()
     company = models.ForeignKey(Company, on_delete=models.CASCADE)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+
 
 class PurchaseOrder(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     vendor = models.CharField(max_length=255)
     price = models.DecimalField(max_digits=10, decimal_places=2)
@@ -41,9 +54,11 @@ class PurchaseOrder(models.Model):
     delivery_delay = models.PositiveIntegerField()
     order_date = models.DateField()
     company = models.ForeignKey(Company, on_delete=models.CASCADE)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+
 
 class Inventory(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     responsible = models.CharField(max_length=255)
     weight = models.DecimalField(max_digits=10, decimal_places=2)
@@ -55,7 +70,8 @@ class Inventory(models.Model):
     container = models.CharField(max_length=255)
     unit_of_measure = models.CharField(max_length=50)
     company = models.ForeignKey(Company, on_delete=models.CASCADE)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+
 
 class Receipt(models.Model):
     OPERATION_TYPES = [
@@ -63,7 +79,7 @@ class Receipt(models.Model):
         ('OUT', 'Outgoing'),
         ('TRANSFER', 'Internal Transfer')
     ]
-
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     contact = models.CharField(max_length=255)
     operation_type = models.CharField(choices=OPERATION_TYPES, max_length=10)
     source_location = models.CharField(max_length=255)
@@ -76,10 +92,11 @@ class Receipt(models.Model):
     unit = models.CharField(max_length=50)
     company = models.ForeignKey(Company, on_delete=models.CASCADE)
     document_number = models.CharField(max_length=255, unique=True)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
 
 
 class Delivery(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     document_number = models.CharField(max_length=255, unique=True)
     source_location = models.CharField(max_length=255)
     destination_location = models.CharField(max_length=255)
@@ -91,10 +108,11 @@ class Delivery(models.Model):
     packaging = models.CharField(max_length=255)
     demand = models.PositiveIntegerField()
     unit = models.CharField(max_length=50)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
 
 
 class InternalTransfer(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     document_number = models.CharField(max_length=255, unique=True)
     source_location = models.CharField(max_length=255)
     destination_location = models.CharField(max_length=255)
@@ -106,10 +124,11 @@ class InternalTransfer(models.Model):
     packaging = models.CharField(max_length=255)
     demand = models.PositiveIntegerField()
     unit = models.CharField(max_length=50)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
 
 
 class PhysicalInventory(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     location = models.CharField(max_length=255)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     on_hand_quantity = models.PositiveIntegerField()
@@ -117,11 +136,12 @@ class PhysicalInventory(models.Model):
     difference = models.IntegerField()
     scheduled_date = models.DateField()
     unit = models.CharField(max_length=50)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     company = models.ForeignKey(Company, on_delete=models.CASCADE)
 
 
 class Scrap(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     quantity = models.PositiveIntegerField()
     source_location = models.CharField(max_length=255)
@@ -135,6 +155,7 @@ class Scrap(models.Model):
 
 
 class LandedCost(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     date = models.DateField()
     transfers = models.CharField(max_length=255)
     journal = models.CharField(max_length=255)
@@ -147,3 +168,44 @@ class LandedCost(models.Model):
     cost = models.DecimalField(max_digits=10, decimal_places=2)
     name = models.CharField(max_length=255)
 
+
+class ProductAttribute(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    name = models.CharField(max_length=255)
+    value = models.CharField(max_length=255)
+    product = models.ForeignKey('Product', related_name='product_attributes', on_delete=models.CASCADE, null=True, blank=True)
+    company = models.ForeignKey(Company, on_delete=models.CASCADE)
+
+
+class UnitOfMeasureCategory(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    name = models.CharField(max_length=255)
+    description = models.TextField(null=True, blank=True)
+    company = models.ForeignKey(Company, on_delete=models.CASCADE)
+
+
+class ProductPackaging(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    product = models.ForeignKey('Product', related_name='product_packagings', on_delete=models.CASCADE, null=True, blank=True)
+    packaging_type = models.CharField(max_length=255)
+    dimensions = models.CharField(max_length=255)
+    weight = models.DecimalField(max_digits=10, decimal_places=2)
+    volume = models.DecimalField(max_digits=10, decimal_places=2)
+    company = models.ForeignKey(Company, on_delete=models.CASCADE)
+
+
+class ReorderingRule(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    product = models.ForeignKey('Product', related_name='reoredering_rules', on_delete=models.CASCADE, null=True, blank=True)
+    min_quantity = models.PositiveIntegerField()
+    max_quantity = models.PositiveIntegerField()
+    reorder_quantity = models.PositiveIntegerField()
+    company = models.ForeignKey(Company, on_delete=models.CASCADE)
+
+
+class BarcodeNomenclature(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    name = models.CharField(max_length=255)
+    pattern = models.CharField(max_length=255)
+    description = models.TextField(null=True, blank=True)
+    company = models.ForeignKey(Company, on_delete=models.CASCADE)

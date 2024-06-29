@@ -4,9 +4,11 @@ from datetime import datetime, timedelta
 
 import phonenumbers
 from django.contrib.auth import login, logout, authenticate, get_user_model
+from django.contrib.auth.handlers.modwsgi import check_password
 from django.contrib.auth.hashers import make_password
 from django.core.mail import send_mail
 from django.db.models import Q
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from django.utils.crypto import get_random_string
@@ -21,8 +23,8 @@ from rest_framework.response import Response
 from rest_framework.utils import json
 from simplejwt import jwt
 
-from .models import Company, User, UserOTP
-from .serializers import CompanySerializer, UserSerializer, UserDetailsSerializer
+from .models import Company, User, UserOTP, ProfilePicture, CompanyLogo
+from .serializers import CompanySerializer, UserSerializer, UserDetailsSerializer, PasswordChangeSerializer
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from phonenumbers import parse, format_number, region_code_for_number
 from pycountry import countries
@@ -99,7 +101,6 @@ class CompanyViewSet(viewsets.ModelViewSet):
                 username=f"{company.email.split('@')[0]}-{random.randint(1000, 9999)}",
                 email=company.email,
                 company=company,
-                password=f"{random.randint(100000, 999999)}",
                 is_manager=True,
                 is_superuser=False,
                 is_staff=True
@@ -109,7 +110,8 @@ class CompanyViewSet(viewsets.ModelViewSet):
 
             send_mail(
                 'Registration Approved',
-                f"""Your registration has been approved. Here are your admin credentials:\n\nUsername: {admin_user.username}\nPassword: jikoTrack@2024""",
+                f"""Your registration has been approved. Here are your admin credentials:\n\nUsername: {admin_user.username}\nPassword: jikoTrack@2024.
+                    \n We advise you change your password immediately because of security reasons. This password expires after 24 hours""",
                 'from@example.com',
                 [company.email],
                 fail_silently=False,
@@ -138,7 +140,7 @@ class CompanyViewSet(viewsets.ModelViewSet):
 
             for company in companies:
                 company_details = {
-                    'id': company.id,
+                    'id': str(company.id),
                     'name': company.companyName,
                     'email': company.email,
                     'country': company.country,
@@ -152,6 +154,30 @@ class CompanyViewSet(viewsets.ModelViewSet):
             return Response(company_list, status=status.HTTP_200_OK)
         except Exception as e:
             return Response({"message": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+    @action(detail=True, methods=['post'], url_path='upload-logo')
+    def upload_logo(self, request, pk=None):
+        company = self.get_object()
+        file = request.FILES.get('image')
+        if not file:
+            return Response({"detail": "No file provided"}, status=status.HTTP_400_BAD_REQUEST)
+
+        company_logo, created = CompanyLogo.objects.get_or_create(company=company)
+        company_logo.image = file
+        company_logo.save()
+
+        return Response({"detail": "Company logo uploaded successfully"}, status=status.HTTP_200_OK)
+
+    @action(detail=True, methods=['get'], url_path='get-logo')
+    def get_logo(self, request, pk=None):
+        company = self.get_object()
+        if not hasattr(company, 'logo') or not company.logo.image:
+            return Response({"detail": "No company logo found"}, status=status.HTTP_404_NOT_FOUND)
+
+        response = HttpResponse(content_type='image/jpeg')
+        response['Content-Disposition'] = f'attachment; filename={company.logo.image.name}'
+        response.write(company.logo.image.read())
+        return response
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -168,20 +194,23 @@ class UserViewSet(viewsets.ModelViewSet):
             if not user:
                 return Response({"message": "Invalid email or password"}, status=status.HTTP_401_UNAUTHORIZED)
 
+            # Assuming user.company_id is the way to get the company ID associated with the user
+            company_id = str(user.company_id)  # Ensure company_id is a string
+
             payload = {
                 'exp': datetime.datetime.utcnow() + datetime.timedelta(days=1),
                 'iat': datetime.datetime.utcnow(),
-                'sub': user.id
+                'sub': str(user.id),
+                'company_id': company_id  # Add company_id as a string
             }
 
             token = jwt.encode(payload, 'secret', algorithm='HS256')
-            company = Company.objects.get(id=user.company_id)
+
             user_details = {
                 'token': token,
-                'id': user.id,
+                'id': str(user.id),  # Convert UUID to string
                 'username': user.username,
                 'email': user.email,
-                'company_name': company.companyName,
                 'is_manager': user.is_manager,
                 'is_accounting_manager': user.is_accounting_manager,
                 'is_inventory_manager': user.is_inventory_manager,
@@ -189,7 +218,12 @@ class UserViewSet(viewsets.ModelViewSet):
                 'is_superuser': user.is_superuser
             }
 
+            if not user.is_superuser:
+                company = Company.objects.get(id=user.company_id)
+                user_details['company_name'] = company.companyName
+
             response = Response()
+            response.set_cookie(key='company_id', value=company_id, httponly=True)  # Set company_id in the cookies
             response.set_cookie(key='jwt', value=token, httponly=True)
             response.data = {
                 'jwt': token,
@@ -198,13 +232,15 @@ class UserViewSet(viewsets.ModelViewSet):
 
             return response
 
+        except Company.DoesNotExist:
+            return Response({"message": "Company matching query does not exist."}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
             return Response({"message": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
     @action(detail=False, methods=['post'])
     def createUser(self, request):
         try:
-            # Convert roles from word form to the form understood by the serializer
+            # Role mapping
             role_mapping = {
                 'Manager': 'is_manager',
                 'Admin': 'is_staff',
@@ -214,12 +250,19 @@ class UserViewSet(viewsets.ModelViewSet):
                 'User': None  # No specific role for 'User'
             }
 
+            # Extract role from request data
             role = request.data.get('role')
+            print("Role from request:", role)
+
+            # Add the corresponding role field to request data
             if role:
                 role_field = role_mapping.get(role)
                 if role_field is not None:
                     request.data[role_field] = True
 
+            print("Request data before serialization:", request.data)
+
+            # Create user using the serializer
             serializer = self.get_serializer(data=request.data)
             if serializer.is_valid():
                 user = serializer.save()
@@ -227,28 +270,30 @@ class UserViewSet(viewsets.ModelViewSet):
                 send_mail(
                     'Welcome to JikoTrack!',
                     f"""
-                        Thank you for creating an account with our app!
+                    Thank you for creating an account with our app!
 
-                        You can now log in using your username: {user.username}
+                    You can now log in using your username: {user.username}
 
-                        For security reasons, your password is not included in this email.
-                        Please visit the login page to set your password.
+                    For security reasons, your password is not included in this email.
+                    Please visit the login page to set your password.
 
-                        We hope you enjoy using our app!
+                    We hope you enjoy using our app!
 
-                        Sincerely,
-                        JikoTrack Team
-                        """,
+                    Sincerely,
+                    JikoTrack Team
+                    """,
                     'from@example.com',
                     [user.email],
                     fail_silently=False,
                 )
 
                 return Response({'status': 'user created'}, status=status.HTTP_201_CREATED)
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            else:
+                print("Serializer errors:", serializer.errors)
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
+            print("Exception occurred:", str(e))
             return Response({"message": str(e)}, status=status.HTTP_400_BAD_REQUEST)
-
     @action(detail=False, methods=['get'])
     def getUsers(self, request):
         try:
@@ -327,7 +372,7 @@ class UserViewSet(viewsets.ModelViewSet):
             login_time = timezone.now()
 
             temp_session = {
-                'user_id': user.id,
+                'user_id': str(user.id),
                 'login_time': login_time.isoformat()
             }
 
@@ -372,7 +417,7 @@ class UserViewSet(viewsets.ModelViewSet):
 
             # Create JWT token
             payload = {
-                'sub': user.id,
+                'sub': str(user.id),
                 'iat': timezone.now(),
                 'exp': timezone.now() + timezone.timedelta(hours=1)
             }
@@ -519,3 +564,56 @@ class UserViewSet(viewsets.ModelViewSet):
             return Response({'status': 'otp sent'}, status=status.HTTP_200_OK)
         except Exception as e:
             return Response({"message": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+    @action(detail=False, methods=['get'])
+    def roles(self, request):
+        roles = [
+            {"name": "Manager"},
+            {"name": "Accounting Manager"},
+            {"name": "Inventory Manager"},
+            {"name": "Purchase Manager"},
+        ]
+        return Response(roles, status=status.HTTP_200_OK)
+
+    @action(detail=True, methods=['post'], url_path='upload-profile-picture')
+    def upload_profile_picture(self, request, pk=None):
+        user = self.get_object()
+        file = request.FILES.get('image')
+        if not file:
+            return Response({"detail": "No file provided"}, status=status.HTTP_400_BAD_REQUEST)
+
+        profile_picture, created = ProfilePicture.objects.get_or_create(user=user)
+        profile_picture.image = file
+        profile_picture.save()
+
+        return Response({"detail": "Profile picture uploaded successfully"}, status=status.HTTP_200_OK)
+
+    @action(detail=True, methods=['get'], url_path='get-profile-picture')
+    def get_profile_picture(self, request, pk=None):
+        user = self.get_object()
+        if not hasattr(user, 'profile_picture') or not user.profile_picture.image:
+            return Response({"detail": "No profile picture found"}, status=status.HTTP_404_NOT_FOUND)
+
+        response = HttpResponse(content_type='image/jpeg')
+        response['Content-Disposition'] = f'attachment; filename={user.profile_picture.image.name}'
+        response.write(user.profile_picture.image.read())
+        return response
+
+    @action(detail=True, methods=['post'])
+    def change_password(self, request, pk=None):
+        user = self.get_object()
+        serializer = PasswordChangeSerializer(data=request.data)
+        if serializer.is_valid():
+            if not check_password(serializer.validated_data['current_password'], user.password):
+                return Response({"detail": "Current password is incorrect"}, status=status.HTTP_400_BAD_REQUEST)
+            user.password = make_password(serializer.validated_data['new_password'])
+            user.save()
+            send_mail(
+                'Password Changed',
+                'Your password has been changed successfully.',
+                'from@example.com',
+                [user.email],
+                fail_silently=False,
+            )
+            return Response({"detail": "Password updated successfully"}, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

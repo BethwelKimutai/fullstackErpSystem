@@ -66,10 +66,8 @@
               <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-500">
                 <div class="text-sm leading-5 text-blue-900">{{ user.username }}</div>
               </td>
-              <td class="px-6 py-4 whitespace-no-wrap border-b text-blue-900 border-gray-500 text-sm leading-5">{{
-                user.email }}</td>
-              <td class="px-6 py-4 whitespace-no-wrap border-b text-blue-900 border-gray-500 text-sm leading-5">{{
-                user.company }}</td>
+              <td class="px-6 py-4 whitespace-no-wrap border-b text-blue-900 border-gray-500 text-sm leading-5">{{ user.email }}</td>
+              <td class="px-6 py-4 whitespace-no-wrap border-b text-blue-900 border-gray-500 text-sm leading-5">{{ user.companyName }}</td>
               <td class="px-6 py-4 whitespace-no-wrap border-b text-blue-900 border-gray-500 text-sm leading-5">
                 <span :class="{ 'text-green-900': user.is_active, 'text-red-900': !user.is_active }"
                   class="relative inline-block px-3 py-1 font-semibold leading-tight">
@@ -78,14 +76,13 @@
                   <span class="relative text-xs">{{ user.is_active ? 'active' : 'inactive' }}</span>
                 </span>
               </td>
-              <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-500 text-blue-900 text-sm leading-5">{{
-                user.date_joined }}</td>
+              <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-500 text-blue-900 text-sm leading-5">{{ user.date_joined }}</td>
               <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-500 text-sm leading-5">{{ user.role }}</td>
               <td class="px-6 py-4 whitespace-no-wrap text-right border-b border-gray-500 text-sm leading-5">
                 <button @click="viewDetails(user.id)"
-                  class="px-5 py-2 border-blue-500 border text-blue-500 rounded transition duration-300 hover:bg-blue-700 hover:text-white focus:outline-none">View
+                  class="px-5 py-2 mr-2 border-blue-500 border text-blue-500 rounded transition duration-300 hover:bg-blue-700 hover:text-white focus:outline-none">View
                   Details</button>
-                  <button @click="deleteUser(user.id)"
+                <button @click="deleteUser(user.id)"
                   class="px-5 py-2 bg-red-500 border text-white rounded transition duration-300 hover:bg-red-700 hover:text-white focus:outline-none">
                   Delete</button>
               </td>
@@ -125,23 +122,23 @@ const fetchUsers = async () => {
   }
 }
 
-const deleteUser = async () => {
-    try {
-      const response = await fetch(`http://127.0.0.1:8000/backend/users/deleteuser/${user.id}/`, {
-        method: "DELETE",
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include'
-      })
-  
-      if (!response.ok) {
-        throw new Error('Network response was not ok')
-      }
-  
-      router.push('/home/users')
-    } catch (e) {
-      console.error('Failed to delete user', e)
+const deleteUser = async (userId) => {
+  try {
+    const response = await fetch(`http://127.0.0.1:8000/backend/users/deleteuser/${userId}/`, {
+      method: "DELETE",
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include'
+    })
+
+    if (!response.ok) {
+      throw new Error('Network response was not ok')
     }
+
+    fetchUsers()
+  } catch (e) {
+    console.error('Failed to delete user', e)
   }
+}
 
 const viewDetails = (userId) => {
   router.push(`/home/userDetails/${userId}`)
@@ -149,7 +146,7 @@ const viewDetails = (userId) => {
 
 onMounted(fetchUsers)
 
-definePageMeta({   
+definePageMeta({
   layout: "home",
 })
 </script>
