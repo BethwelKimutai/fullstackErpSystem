@@ -129,7 +129,7 @@
                                 <p class="text-sm text-gray-600">Neque Dolor, fugiat non cum doloribus aperiam
                                     voluptates nostrum.</p>
                             </div>
-                            <nuxt-link to="" class="flex justify-between items-center group-hover:text-yellow-600">
+                            <nuxt-link to="/inventory/configurations/products/ProductCategories" class="flex justify-between items-center group-hover:text-yellow-600">
                                 <span class="text-sm">See Product Categories</span>
                                 <span
                                     class="-translate-x-4 opacity-0 text-2xl transition duration-300 group-hover:opacity-100 group-hover:translate-x-0">&RightArrow;</span>
@@ -149,7 +149,7 @@
                                 <p class="text-sm text-gray-600">Neque Dolor, fugiat non cum doloribus aperiam
                                     voluptates nostrum.</p>
                             </div>
-                            <nuxt-link to="" class="flex justify-between items-center group-hover:text-yellow-600">
+                            <nuxt-link to="/inventory/configurations/products/ProductAttributes" class="flex justify-between items-center group-hover:text-yellow-600">
                                 <span class="text-sm">See Product Attributes</span>
                                 <span
                                     class="-translate-x-4 opacity-0 text-2xl transition duration-300 group-hover:opacity-100 group-hover:translate-x-0">&RightArrow;</span>
@@ -189,7 +189,7 @@
                                 <p class="text-sm text-gray-600">Neque Dolor, fugiat non cum doloribus aperiam
                                     voluptates nostrum.</p>
                             </div>
-                            <nuxt-link to="" class="flex justify-between items-center group-hover:text-yellow-600">
+                            <nuxt-link to="/inventory/configurations/products/reordering" class="flex justify-between items-center group-hover:text-yellow-600">
                                 <span class="text-sm">See Reordering Rules</span>
                                 <span
                                     class="-translate-x-4 opacity-0 text-2xl transition duration-300 group-hover:opacity-100 group-hover:translate-x-0">&RightArrow;</span>
@@ -211,7 +211,7 @@
                                 <p class="text-sm text-gray-600">Neque Dolor, fugiat non cum doloribus aperiam
                                     voluptates nostrum.</p>
                             </div>
-                            <nuxt-link to="" class="flex justify-between items-center group-hover:text-yellow-600">
+                            <nuxt-link to="/inventory/configurations/products/barCodeN" class="flex justify-between items-center group-hover:text-yellow-600">
                                 <span class="text-sm">See Barcode Nomenclature</span>
                                 <span
                                     class="-translate-x-4 opacity-0 text-2xl transition duration-300 group-hover:opacity-100 group-hover:translate-x-0">&RightArrow;</span>
@@ -239,7 +239,7 @@
                                 <p class="text-sm text-gray-600">Neque Dolor, fugiat non cum doloribus aperiam
                                     voluptates nostrum.</p>
                             </div>
-                            <nuxt-link to="" class="flex justify-between items-center group-hover:text-yellow-600">
+                            <nuxt-link to="/inventory/configurations/products/UOM" class="flex justify-between items-center group-hover:text-yellow-600">
                                 <span class="text-sm">Units of Measure Categories</span>
                                 <span
                                     class="-translate-x-4 opacity-0 text-2xl transition duration-300 group-hover:opacity-100 group-hover:translate-x-0">&RightArrow;</span>

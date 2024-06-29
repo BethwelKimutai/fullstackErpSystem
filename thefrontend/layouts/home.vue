@@ -52,7 +52,8 @@
                                 <p class="text-sm text-zinc-600">{{ email }}</p>
                             </div>
                             <div class="border-t border-zinc-200"></div>
-                            <nuxt-link to="/profiledemo" class="block px-4 py-2 hover:bg-zinc-100">My profile</nuxt-link>
+                            <nuxt-link to="/profiledemo" class="block px-4 py-2 hover:bg-zinc-100">My
+                                profile</nuxt-link>
                             <nuxt-link to="" class="block px-4 py-2 hover:bg-zinc-100">Account settings</nuxt-link>
                             <nuxt-link to="" class="block px-4 py-2 hover:bg-zinc-100">My likes</nuxt-link>
                             <nuxt-link to="" class="block px-4 py-2 hover:bg-zinc-100">Collections</nuxt-link>
@@ -108,12 +109,12 @@ export default {
             auth: false,
             showPasswordInput: false, // Add state to show OTP input
             password: '',
-        }
+        };
     },
     async mounted() {
-        const router = useRouter(); // Get the router instance
         try {
             const response = await fetch('http://127.0.0.1:8000/backend/users/getuser/', {
+                method: 'GET',
                 headers: { 'Content-Type': 'application/json' },
                 credentials: 'include',
             });
@@ -124,116 +125,112 @@ export default {
                 this.email = content.email;
             } else {
                 alert('You are not logged in');
-                router.push('/Signup/login');
+                this.$router.push('/Signup/login');
             }
-
         } catch (e) {
             alert('You are not logged in');
-            router.push('/Signup/login');
+            this.$router.push('/Signup/login');
         }
     },
-    methods: {
-        async logout() {
-            try {
-                const response = await fetch('http://127.0.0.1:8000/backend/users/logout/', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    credentials: 'include', // Include cookies for logout to work
-                });
+    async logout() {
+        try {
+            const response = await fetch('http://127.0.0.1:8000/backend/users/logout/', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
+            });
 
-                if (!response.ok) {
-                    throw new Error('Logout failed');
-                }
-
-                const data = await response.json();
-                console.log(data.message); // Log success message for debugging
-
-                // Clear user data and redirect to login
-                this.companyName = '';
-                this.username = '';
-                this.email = '';
-                this.auth = false;
-
-                this.$router.push('/Signup/login');
-            } catch (error) {
-                console.error('Logout error:', error);
-                alert('Logout failed. Please try again.');
+            if (!response.ok) {
+                throw new Error('Logout failed');
             }
-        },
-        async signOut() {
-            try {
-                const response = await fetch('http://127.0.0.1:8000/backend/users/signout/', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    credentials: 'include'
-                });
 
-                if (response.ok) {
-                    this.showPasswordInput = true;
-                    const data = await response.json();
-                    console.log(data.message);
-                    alert('Signed out temporarily. Please enter your password to resume session.');
-                } else {
-                    const errorData = await response.json();
-                    console.error(errorData.message);
-                    alert('Sign-out failed. Please try again.');
-                }
-            } catch (error) {
-                console.error('Sign-out error:', error);
+            const data = await response.json();
+            console.log(data.message);
+
+            this.companyName = '';
+            this.username = '';
+            this.email = '';
+            this.auth = false;
+
+            this.$router.push('/');
+        } catch (error) {
+            console.error('Logout error:', error);
+            alert('Logout failed. Please try again.');
+        }
+    },
+    async signOut() {
+        try {
+            const response = await fetch('http://127.0.0.1:8000/backend/users/signout/', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include'
+            });
+
+            if (response.ok) {
+                this.showPasswordInput = true;
+                const data = await response.json();
+                console.log(data.message);
+                alert('Signed out temporarily. Please enter your password to resume session.');
+            } else {
+                const errorData = await response.json();
+                console.error(errorData.message);
                 alert('Sign-out failed. Please try again.');
             }
-        },
-        closeModal() {
-            this.showPasswordInput = false;
-        },
-        async verifyPassword() {
-            try {
-                const response = await fetch('http://127.0.0.1:8000/backend/users/signin/', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    credentials: 'include',
-                    body: JSON.stringify({ password: this.password })
-                });
+        } catch (error) {
+            console.error('Sign-out error:', error);
+            alert('Sign-out failed. Please try again.');
+        }
+    },
+    closeModal() {
+        this.showPasswordInput = false;
+    },
+    async verifyPassword() {
+        try {
+            const response = await fetch('http://127.0.0.1:8000/backend/users/signin/', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
+                body: JSON.stringify({ password: this.password })
+            });
 
-                if (response.ok) {
-                    const data = await response.json();
-                    console.log(data.message); // Log success message for debugging
-                    this.showPasswordInput = false;
-                    alert('Sign-in successful and session resumed.');
-                } else {
-                    const errorData = await response.json();
-                    console.error(errorData.message);
-                    alert('Sign-in failed. Please try again.');
-                }
-            } catch (error) {
-                console.error('Sign-in error:', error);
+            if (response.ok) {
+                const data = await response.json();
+                console.log(data.message); // Log success message for debugging
+                this.showPasswordInput = false;
+                alert('Sign-in successful and session resumed.');
+            } else {
+                const errorData = await response.json();
+                console.error(errorData.message);
                 alert('Sign-in failed. Please try again.');
             }
-        },
+        } catch (error) {
+            console.error('Sign-in error:', error);
+            alert('Sign-in failed. Please try again.');
+        }
     },
-    setup() {
-        onMounted(() => {
-            const avatarButton = document.getElementById('avatarButton');
-            const dropdownMenu = document.getElementById('dropdownMenu');
 
-            if (avatarButton && dropdownMenu) {
-                avatarButton.addEventListener('click', (event) => {
-                    event.stopPropagation();
-                    dropdownMenu.classList.toggle('hidden');
-                });
+setup() {
+    onMounted(() => {
+        const avatarButton = document.getElementById('avatarButton');
+        const dropdownMenu = document.getElementById('dropdownMenu');
 
-                document.addEventListener('click', () => {
-                    dropdownMenu.classList.add('hidden');
-                });
-            } else {
-                console.error('Elements not found');
-            }
-        });
-    }
+        if (avatarButton && dropdownMenu) {
+            avatarButton.addEventListener('click', (event) => {
+                event.stopPropagation();
+                dropdownMenu.classList.toggle('hidden');
+            });
+
+            document.addEventListener('click', () => {
+                dropdownMenu.classList.add('hidden');
+            });
+        } else {
+            console.error('Elements not found');
+        }
+    });
 }
+};
 </script>
+
 <style scoped>
 .router-link-exact-active {
     color: rgb(251 191 36);

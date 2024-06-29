@@ -38,6 +38,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'Authorisation',
+    'Inventory',
+    'purchase',
     'corsheaders',
     'rest_framework'
 ]
@@ -80,7 +82,7 @@ WSGI_APPLICATION = 'thebackend.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'erp_sys_demo',
+        'NAME': 'myerpsystemdemo1',
         'HOST': 'localhost',
         'USER': 'root',
         'PASSWORD': '',

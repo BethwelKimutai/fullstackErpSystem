@@ -117,7 +117,7 @@ export default {
     const router = useRouter(); // Get the router instance
     try {
       const response = await fetch('http://127.0.0.1:8000/backend/users/getuser/', {
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json','Authorization': `Bearer ${token}`, },
         credentials: 'include',
       });
       if (response.ok){

@@ -153,9 +153,9 @@
   
   onMounted(fetchUsers)
   
-  // definePageMeta({
-  //   layout: "home",
-  // })
+  definePageMeta({
+    layout: "home",
+  })
   </script>
   
   <style scoped></style>

@@ -120,12 +120,12 @@ export default {
                 this.email = content.email;
             } else {
                 alert('You are not logged in');
-                router.push('/Signup/login');
+                router.push('/');
             }
 
         } catch (e) {
             alert('You are not logged in');
-            router.push('/Signup/login');
+            router.push('/');
         }
     },
     methods: {

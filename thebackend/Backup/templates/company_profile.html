@@ -1,0 +1,54 @@
+<!-- templates/company_profile.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Company Profile</title>
+</head>
+<body>
+    <h2>Company Profile</h2>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <label for="name">Company Name:</label>
+        <input type="text" id="name" name="name" value="{{ company.name }}" required><br><br>
+
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" value="{{ company.email }}" required><br><br>
+
+        <label for="phone">Phone Number:</label>
+        <input type="text" id="phone" name="phone" value="{{ company.phone }}"><br><br>
+
+        <label for="country">Country:</label>
+        <input type="text" id="country" name="country" value="{{ company.country }}"><br><br>
+
+        <label for="address">Address:</label>
+        <input type="text" id="address" name="address" value="{{ company.address }}" required><br><br>
+
+        <label for="city">City:</label>
+        <input type="text" id="city" name="city" value="{{ company.city }}" required><br><br>
+
+        <label for="zone">Zone:</label>
+        <input type="text" id="zone" name="zone" value="{{ company.zone }}" required><br><br>
+
+        <label for="companyName">Company Name:</label>
+        <input type="text" id="companyName" name="companyName" value="{{ company.companyName }}"><br><br>
+
+        <label for="language">Language:</label>
+        <input type="text" id="language" name="language" value="{{ company.language }}"><br><br>
+
+        <label for="companySize">Company Size:</label>
+        <input type="text" id="companySize" name="companySize" value="{{ company.companySize }}"><br><br>
+
+        <label for="primaryInterest">Primary Interest:</label>
+        <input type="text" id="primaryInterest" name="primaryInterest" value="{{ company.primaryInterest }}"><br><br>
+
+        <label for="website">Website:</label>
+        <input type="url" id="website" name="website" value="{{ company.website }}"><br><br>
+
+        <label for="logo">Company Logo:</label>
+        <input type="file" id="logo" name="logo"><br><br>
+
+        <button type="submit">Update Profile</button>
+    </form>
+</body>
+</html>

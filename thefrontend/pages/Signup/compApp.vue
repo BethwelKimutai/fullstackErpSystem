@@ -110,7 +110,7 @@
                     </form>
                 </div>
                 <div class="mt-8 lg:mt-0 lg:ml-8 w-full lg:w-1/3">
-                    <div class="bg-white dark:bg-indigo-500 p-6 rounded-lg shadow-md">
+                    <div class="bg-indigo-500 dark:bg-indigo-500 p-6 rounded-lg shadow-md">
                         <div class="flex items-center space-x-4">
                             <img src="https://placehold.co/40x40" alt="SAP Logo" class="w-10 h-10 rounded-full">
                             <div>
@@ -122,7 +122,7 @@
                         <p class="mt-4 text-zinc-700 dark:text-zinc-300">Have you found the secret of supply chain
                             efficiency in disruption? Read the Oxford Economics Study to see what we learned</p>
                     </div>
-                    <div class="bg-white dark:bg-indigo-500 p-6 rounded-lg shadow-md mt-6">
+                    <div class="bg-indigo-500 dark:bg-indigo-500 p-6 rounded-lg shadow-md mt-6">
                         <div class="flex items-center space-x-4">
                             <img src="https://placehold.co/40x40" alt="User Avatar" class="w-10 h-10 rounded-full">
                             <div>
@@ -192,7 +192,7 @@ export default {
                 } else {
                     const responseData = await response.json();
                     alert('Registration successful. Status: ' + responseData.status);
-                    this.$router.push('/Signup/login');
+                    this.$router.push('/');
                 }
             } catch (error) {
                 console.error('Error:', error);
