@@ -46,7 +46,7 @@ Small restaurants often face significant challenges with accounting and inventor
 Clone the repository using the following link:
 
 ```bash
-git clone https://github.com/Gambi204/fullstackErpSystem.git
+git clone https://github.com/BethwelKimutai/fullstackErpSystem.git
 cd fullstackErpSystem
 ```
 
