@@ -23,7 +23,7 @@ JikoTrack is a comprehensive web-based solution designed to streamline inventory
 
 ## Introduction
 
-Small restaurants often face significant challenges with accounting and inventory management, leading to operational inefficiencies and financial discrepancies. JikoTrack addresses these issues by providing an integrated platform that combines advanced inventory and accounting modules. This system is designed to help restaurant owners monitor inventory levels in real-time, manage finances effectively, and allocate resources efficiently.
+Small restaurants often face significant challenges with inventory management, leading to operational inefficiencies and financial discrepancies. JikoTrack addresses these issues by providing an integrated platform that combines advanced inventory and accounting modules. This system is designed to help restaurant owners monitor inventory levels in real-time, manage finances effectively, and allocate resources efficiently.
 
 ## Features
 
