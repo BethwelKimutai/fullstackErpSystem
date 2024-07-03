@@ -3,7 +3,7 @@
 
 ## Overview
 
-JikoTrack is a comprehensive web-based solution designed to streamline accounting and inventory management for small eateries. This platform integrates essential restaurant management functions into a single system, enhancing operational efficiency, financial transparency, and sustainability.
+JikoTrack is a comprehensive web-based solution designed to streamline inventory management for small eateries. This platform integrates essential restaurant management functions into a single system, enhancing operational efficiency, financial transparency, and sustainability.
 
 ## Table of Contents
 
