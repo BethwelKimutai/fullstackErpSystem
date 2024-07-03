@@ -14,6 +14,7 @@ JikoTrack is a comprehensive web-based solution designed to streamline inventory
   - [Cloning the Project](#cloning-the-project)
   - [Backend Setup](#backend-setup)
   - [Frontend Setup](#frontend-setup)
+- [Project Structure](#project-structure)
 - [Usage](#usage)
 - [Dependencies](#dependencies)
 - [System Requirements](#system-requirements)
@@ -115,6 +116,53 @@ cd fullstackErpSystem
     ```bash
     npm run dev
     ```
+
+## Project Structure
+
+```plaintext
+fullstackErpSystem/
+│
+├── backend/
+│   ├── venv/                     # Virtual environment
+│   ├── manage.py                 # Django management script
+│   ├── requirements.txt          # Required Python packages
+│   ├── Pipfile                   # Pipenv configuration file
+│   ├── Pipfile.lock              # Pipenv lock file
+│   ├── project_name/             # Django project directory
+│   │   ├── __init__.py
+│   │   ├── settings.py           # Django settings
+│   │   ├── urls.py               # URL declarations
+│   │   ├── wsgi.py               # WSGI configuration
+│   │   ├── asgi.py               # ASGI configuration
+│   ├── app_name/                 # Example app directory
+│   │   ├── migrations/           # Database migrations
+│   │   │   ├── __init__.py
+│   │   ├── __init__.py
+│   │   ├── admin.py              # Admin definitions
+│   │   ├── apps.py               # App configuration
+│   │   ├── models.py             # Data models
+│   │   ├── tests.py              # Tests
+│   │   ├── views.py              # Views
+│   │   ├── serializers.py        # DRF serializers
+│   │   ├── urls.py               # App URLs
+│
+├── frontend/
+│   ├── node_modules/             # Node.js modules
+│   ├── .nuxt/                    # Nuxt build directory
+│   ├── assets/                   # Uncompiled assets such as SASS, LESS, or JavaScript
+│   ├── components/               # Vue.js components
+│   ├── layouts/                  # Layouts for Nuxt
+│   ├── pages/                    # Nuxt pages
+│   ├── plugins/                  # Plugins for Nuxt
+│   ├── static/                   # Static files
+│   ├── store/                    # Vuex store
+│   ├── nuxt.config.js            # Nuxt configuration file
+│   ├── package.json              # NPM package configuration
+│   ├── package-lock.json         # NPM package lock file
+│
+├── .gitignore                    # Git ignore file
+├── README.md                     # Project README file
+```
 
 ## Usage
 
