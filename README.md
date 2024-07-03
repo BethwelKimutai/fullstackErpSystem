@@ -46,7 +46,7 @@ Small restaurants often face significant challenges with accounting and inventor
 Clone the repository using the following link:
 
 ```bash
-git clone https://github.com/BethwelKimutai/fullstackErpSystem.git
+git clone https://github.com/Gambi204/fullstackErpSystem.git
 cd fullstackErpSystem
 ```
 
@@ -123,31 +123,31 @@ After completing the installation steps, you can start using JikoTrack by access
 ## Dependencies
 
 - **Frameworks**:
-  - Django
-  - Django REST Framework
-  - Nuxt3
+  - [Django](https://www.djangoproject.com/)
+  - [Django REST Framework](https://www.django-rest-framework.org/)
+  - [Nuxt3](https://nuxt.com/)
 - **Python Packages**:
-  - mysqlclient
-  - django-mysql
-  - django-cors-headers
-  - PyJWT
-  - django-filter
-  - markdown
-  - djangorestframework
-  - phonenumbers
-  - djangorestframework-simplejwt
-  - pycountry
+  - [mysqlclient](https://pypi.org/project/mysqlclient/)
+  - [django-mysql](https://pypi.org/project/django-mysql/)
+  - [django-cors-headers](https://pypi.org/project/django-cors-headers/)
+  - [PyJWT](https://pypi.org/project/PyJWT/)
+  - [django-filter](https://pypi.org/project/django-filter/)
+  - [markdown](https://pypi.org/project/Markdown/)
+  - [djangorestframework](https://pypi.org/project/djangorestframework/)
+  - [phonenumbers](https://pypi.org/project/phonenumbers/)
+  - [djangorestframework-simplejwt](https://pypi.org/project/djangorestframework-simplejwt/)
+  - [pycountry](https://pypi.org/project/pycountry/)
 
 ## System Requirements
 
 - **Backend**:
-  - Python 3.8+
-  - Django
-  - MySQL
+  - [Python 3.8+](https://www.python.org/downloads/)
+  - [Django](https://www.djangoproject.com/)
+  - [MySQL](https://dev.mysql.com/downloads/)
 
 - **Frontend**:
-  - Node.js
-  - Nuxt3
+  - [Node.js](https://nodejs.org/)
+  - [Nuxt3](https://nuxt.com/)
 
 ## Contributing
 
@@ -160,3 +160,4 @@ This project is licensed under the MIT License.
 ## Contributors
 
 Strathmore University
+```
