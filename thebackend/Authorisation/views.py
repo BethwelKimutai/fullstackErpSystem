@@ -1,31 +1,54 @@
 import random
-from datetime import datetime
+import string
+import uuid
+from datetime import datetime, timedelta
 
+import jwt
 import phonenumbers
 from django.contrib.auth import login, logout, authenticate, get_user_model
+<<<<<<< HEAD
+from django.contrib.auth.hashers import make_password, check_password
+from django.core.exceptions import ValidationError
+=======
+from django.contrib.auth.handlers.modwsgi import check_password
 from django.contrib.auth.hashers import make_password
+>>>>>>> e5ef20e6faa5594b57c646fde9c033923d255356
 from django.core.mail import send_mail
+from django.core.serializers import json
 from django.db.models import Q
+<<<<<<< HEAD
+from django.http import JsonResponse
+=======
+from django.http import HttpResponse
+>>>>>>> e5ef20e6faa5594b57c646fde9c033923d255356
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
-from django.utils.decorators import method_decorator
-from django.views.decorators.csrf import csrf_exempt, ensure_csrf_cookie
-from pip._internal.utils import logging
+from phonenumbers.phonenumberutil import parse, format_number, region_code_for_number
+from pycountry import countries
 from rest_framework import status, viewsets
-from rest_framework.decorators import action
-from rest_framework.exceptions import AuthenticationFailed, NotFound
+from rest_framework.decorators import action, permission_classes, api_view
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from simplejwt import jwt
+from rest_framework_simplejwt.tokens import RefreshToken, AccessToken
 
-from .models import Company, User
-from .serializers import CompanySerializer, UserSerializer, UserDetailsSerializer
-from django.core.exceptions import ValidationError
+<<<<<<< HEAD
+from thebackend import settings
+from .models import Company, User, UserOTP
+from .serializers import (
+    CompanySerializer, UserSerializer, PasswordChangeSerializer,
+    UserAvatarSerializer, CompanyLogoSerializer
+)
+=======
+from .models import Company, User, UserOTP, ProfilePicture, CompanyLogo
+from .serializers import CompanySerializer, UserSerializer, UserDetailsSerializer, PasswordChangeSerializer
+from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from phonenumbers import parse, format_number, region_code_for_number
 from pycountry import countries
 import jwt
 import datetime
-from .models import UserOTP
+>>>>>>> e5ef20e6faa5594b57c646fde9c033923d255356
+
+User = get_user_model()
 
 
 class CompanyViewSet(viewsets.ModelViewSet):
@@ -39,20 +62,14 @@ class CompanyViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=['post'])
     def register(self, request):
         try:
-            # 1. Field Validation with Custom Serializer
             serializer = self.get_serializer(data=request.data)
             if not serializer.is_valid():
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-            # 2. Duplicate Check
             duplicate_exists = Company.objects.filter(email=request.data['email']).exists()
             if duplicate_exists and request.data.get('is_approved', False):
                 return Response({'error': 'Company already approved.'}, status=status.HTTP_400_BAD_REQUEST)
-            elif duplicate_exists:
-                # Allow multiple registrations for non-approved companies
-                pass
 
-            # 3. Extract Country Code and Name from Phone Number (if applicable)
             phone_number = request.data.get('phone_number')
             if phone_number:
                 try:
@@ -60,7 +77,6 @@ class CompanyViewSet(viewsets.ModelViewSet):
                     self.instance.country_code = f"+{parsed_number.country_code}"
                     self.instance.number = format_number(parsed_number, phonenumbers.PhoneNumberFormat.NATIONAL)
 
-                    # Get country name from country code
                     country_code = region_code_for_number(parsed_number)
                     country = countries.get(alpha_2=country_code)
                     if country:
@@ -68,7 +84,6 @@ class CompanyViewSet(viewsets.ModelViewSet):
                 except phonenumbers.phonenumberutil.NumberParseException as e:
                     raise ValidationError(f"Invalid phone number: {e}")
 
-            # 4. Save with Conditional Approval and Email Notification
             self.instance = serializer.save(is_approved=False)
             send_mail(
                 'Registration Request Received',
@@ -90,12 +105,10 @@ class CompanyViewSet(viewsets.ModelViewSet):
             if company.is_approved:
                 return Response({"message": "Company already approved"}, status=status.HTTP_400_BAD_REQUEST)
 
-            # Create an admin user for the approved company
             admin_user = User.objects.create(
                 username=f"{company.email.split('@')[0]}-{random.randint(1000, 9999)}",
                 email=company.email,
                 company=company,
-                password=f"{random.randint(100000, 999999)}",
                 is_manager=True,
                 is_superuser=False,
                 is_staff=True
@@ -105,13 +118,20 @@ class CompanyViewSet(viewsets.ModelViewSet):
 
             send_mail(
                 'Registration Approved',
-                f"""Your registration has been approved. Here are your admin credentials:\n\nUsername: {admin_user.username}\nPassword: jikoTrack@2024""",
+<<<<<<< HEAD
+                f"""Your registration has been approved. Here are your admin credentials:
+                    \nUsername: {admin_user.username}\nPassword: jikoTrack@2024.
+                    \n We advise you change your password immediately because of security reasons. 
+                    This password expires after 24 hours""",
+=======
+                f"""Your registration has been approved. Here are your admin credentials:\n\nUsername: {admin_user.username}\nPassword: jikoTrack@2024.
+                    \n We advise you change your password immediately because of security reasons. This password expires after 24 hours""",
+>>>>>>> e5ef20e6faa5594b57c646fde9c033923d255356
                 'from@example.com',
                 [company.email],
                 fail_silently=False,
             )
 
-            # Update the company's approval status after email is sent
             company.is_approved = True
             company.save()
 
@@ -125,15 +145,22 @@ class CompanyViewSet(viewsets.ModelViewSet):
         serializer = CompanySerializer(companies, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-    methods=['get']
-    def getAllCompanies(self, request):
+    @action(detail=True, methods=['post'])
+    def upload_company_logo(self, request, pk=id):
         try:
-            companies = Company.objects.all()
-            company_list = []
+            try:
+                company_id = uuid.UUID(pk)
+            except ValueError:
+                return Response({'error': 'Invalid UUID'}, status=status.HTTP_400_BAD_REQUEST)
 
+<<<<<<< HEAD
+            company = Company.objects.get(id=company_id)
+            if not request.user.is_superuser and request.user != company.user:
+                return Response({'error': 'Permission denied'}, status=status.HTTP_403_FORBIDDEN)
+=======
             for company in companies:
                 company_details = {
-                    'id': company.id,
+                    'id': str(company.id),
                     'name': company.companyName,
                     'email': company.email,
                     'country': company.country,
@@ -143,12 +170,41 @@ class CompanyViewSet(viewsets.ModelViewSet):
                     'is_approved': company.is_approved,
                 }
                 company_list.append(company_details)
+>>>>>>> e5ef20e6faa5594b57c646fde9c033923d255356
 
-            return Response(company_list, status=status.HTTP_200_OK)
+            serializer = CompanyLogoSerializer(company, data=request.data, partial=True)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_200_OK)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except Company.DoesNotExist:
+            return Response({'error': 'Company not found'}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
-            return Response({"message": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"message": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-User = get_user_model()
+    @action(detail=True, methods=['post'], url_path='upload-logo')
+    def upload_logo(self, request, pk=None):
+        company = self.get_object()
+        file = request.FILES.get('image')
+        if not file:
+            return Response({"detail": "No file provided"}, status=status.HTTP_400_BAD_REQUEST)
+
+        company_logo, created = CompanyLogo.objects.get_or_create(company=company)
+        company_logo.image = file
+        company_logo.save()
+
+        return Response({"detail": "Company logo uploaded successfully"}, status=status.HTTP_200_OK)
+
+    @action(detail=True, methods=['get'], url_path='get-logo')
+    def get_logo(self, request, pk=None):
+        company = self.get_object()
+        if not hasattr(company, 'logo') or not company.logo.image:
+            return Response({"detail": "No company logo found"}, status=status.HTTP_404_NOT_FOUND)
+
+        response = HttpResponse(content_type='image/jpeg')
+        response['Content-Disposition'] = f'attachment; filename={company.logo.image.name}'
+        response.write(company.logo.image.read())
+        return response
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -158,93 +214,191 @@ class UserViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=['post'])
     def login(self, request):
         try:
-            username = request.data.get('username').lower()
+            username = request.data.get('username')
             password = request.data.get('password')
 
             user = authenticate(username=username, password=password)
             if not user:
                 return Response({"message": "Invalid email or password"}, status=status.HTTP_401_UNAUTHORIZED)
 
+<<<<<<< HEAD
+            company_id = str(user.company_id)
+
+            payload = {
+                'exp': datetime.utcnow() + timedelta(days=1),
+                'iat': datetime.utcnow(),
+                'sub': str(user.id),
+=======
+            # Assuming user.company_id is the way to get the company ID associated with the user
+            company_id = str(user.company_id)  # Ensure company_id is a string
+
             payload = {
                 'exp': datetime.datetime.utcnow() + datetime.timedelta(days=1),
                 'iat': datetime.datetime.utcnow(),
-                'sub': user.id
+                'sub': str(user.id),
+                'company_id': company_id  # Add company_id as a string
             }
 
             token = jwt.encode(payload, 'secret', algorithm='HS256')
-            company = Company.objects.get(id=user.company_id)
+
             user_details = {
                 'token': token,
-                'id': user.id,
+                'id': str(user.id),  # Convert UUID to string
+>>>>>>> e5ef20e6faa5594b57c646fde9c033923d255356
                 'username': user.username,
                 'email': user.email,
-                'company_name': company.companyName,
                 'is_manager': user.is_manager,
                 'is_accounting_manager': user.is_accounting_manager,
                 'is_inventory_manager': user.is_inventory_manager,
                 'is_purchase_manager': user.is_purchase_manager,
+                'is_superuser': user.is_superuser,
+                'company_id': str(user.company_id)
             }
+
+<<<<<<< HEAD
+            tokens = jwt.encode(payload, settings.SECRET_KEY, algorithm='HS256')
+
+            if not user.is_superuser:
+                company = Company.objects.get(id=company_id)
 
             response = Response()
+            response.set_cookie(key='jwt', value=tokens, httponly=True)
+=======
+            if not user.is_superuser:
+                company = Company.objects.get(id=user.company_id)
+                user_details['company_name'] = company.companyName
+
+            response = Response()
+            response.set_cookie(key='company_id', value=company_id, httponly=True)  # Set company_id in the cookies
             response.set_cookie(key='jwt', value=token, httponly=True)
+>>>>>>> e5ef20e6faa5594b57c646fde9c033923d255356
             response.data = {
-                'jwt': token,
-                'user_details': user_details
+                'jwt': tokens,
             }
 
-            return response
+            return JsonResponse({"jwt": tokens, "code": "200"})
 
+        except Exception as e:
+            return Response({"message": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+    @action(detail=False, methods=['post'])
+    def logout(self, request):
+        try:
+            request.session.flush()
+            logout(request)
+            return Response({'message': 'User logged out successfully'})
+        except Exception as e:
+            return Response({"message": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+    @action(detail=False, methods=['post'])
+    def getUsers(self, request):
+        try:
+            token = request.data.get('token')
+            if not token:
+                return Response({"message": "Token not provided"}, status=status.HTTP_401_UNAUTHORIZED)
+
+            # Decode the JWT token
+            try:
+                payload = jwt.decode(token, settings.SECRET_KEY, algorithms=['HS256'])
+            except jwt.ExpiredSignatureError:
+                return Response({"message": "Token has expired"}, status=status.HTTP_401_UNAUTHORIZED)
+            except jwt.InvalidTokenError:
+                return Response({"message": "Invalid token"}, status=status.HTTP_401_UNAUTHORIZED)
+
+            # Fetch the user details from the payload
+            user_id = payload.get('sub')
+            user = User.objects.get(id=user_id)
+
+            user_details = {
+                'id': user.id,
+                'username': user.username,
+                'email': user.email,
+                'is_manager': user.is_manager,
+                'is_accounting_manager': user.is_accounting_manager,
+                'is_inventory_manager': user.is_inventory_manager,
+                'is_purchase_manager': user.is_purchase_manager,
+                'is_superuser': user.is_superuser,
+                'company_id': str(user.company_id)
+            }
+
+            return JsonResponse({"user": user_details, "code": "200"})
+
+        except Company.DoesNotExist:
+            return Response({"message": "Company matching query does not exist."}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
             return Response({"message": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
     @action(detail=False, methods=['post'])
     def createUser(self, request):
         try:
-            # Convert roles from word form to the form understood by the serializer
+<<<<<<< HEAD
+=======
+            # Role mapping
+>>>>>>> e5ef20e6faa5594b57c646fde9c033923d255356
             role_mapping = {
                 'Manager': 'is_manager',
-                'Admin': 'is_superuser',
+                'Admin': 'is_staff',
                 'Accounting Manager': 'is_accounting_manager',
                 'Inventory Manager': 'is_inventory_manager',
                 'Purchase Manager': 'is_purchase_manager',
-                'User': None  # No specific role for 'User'
+                'User': None
             }
 
+            # Extract role from request data
             role = request.data.get('role')
+            print("Role from request:", role)
+
+            # Add the corresponding role field to request data
             if role:
                 role_field = role_mapping.get(role)
                 if role_field is not None:
                     request.data[role_field] = True
 
+            print("Request data before serialization:", request.data)
+
+            # Create user using the serializer
             serializer = self.get_serializer(data=request.data)
             if serializer.is_valid():
                 user = serializer.save()
 
                 send_mail(
                     'Welcome to JikoTrack!',
+<<<<<<< HEAD
+                    f"Thank you for creating an account with our app!\n\n"
+                    f"You can now log in using your username: {user.username}\n"
+                    f"For security reasons, your password is not included in this email.\n"
+                    f"Please visit the login page to set your password.\n\n"
+                    f"We hope you enjoy using our app!\n\nSincerely,\nJikoTrack Team",
+=======
                     f"""
-                        Thank you for creating an account with our app!
+                    Thank you for creating an account with our app!
 
-                        You can now log in using your username: {user.username}
+                    You can now log in using your username: {user.username}
 
-                        For security reasons, your password is not included in this email.
-                        Please visit the login page to set your password.
+                    For security reasons, your password is not included in this email.
+                    Please visit the login page to set your password.
 
-                        We hope you enjoy using our app!
+                    We hope you enjoy using our app!
 
-                        Sincerely,
-                        JikoTrack Team
-                        """,
+                    Sincerely,
+                    JikoTrack Team
+                    """,
+>>>>>>> e5ef20e6faa5594b57c646fde9c033923d255356
                     'from@example.com',
                     [user.email],
                     fail_silently=False,
                 )
 
                 return Response({'status': 'user created'}, status=status.HTTP_201_CREATED)
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            else:
+<<<<<<< HEAD
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+=======
+                print("Serializer errors:", serializer.errors)
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
+            print("Exception occurred:", str(e))
             return Response({"message": str(e)}, status=status.HTTP_400_BAD_REQUEST)
-
     @action(detail=False, methods=['get'])
     def getUsers(self, request):
         try:
@@ -252,7 +406,7 @@ class UserViewSet(viewsets.ModelViewSet):
             token = request.COOKIES.get('jwt')
 
             if not token:
-                return Response({"message": "Authentication token not provided"}, status=status.HTTP_401_UNAUTHORIZED)
+                return Response({"message": "Unauthenticated"}, status=status.HTTP_401_UNAUTHORIZED)
 
             # Decode the JWT token
             try:
@@ -263,126 +417,158 @@ class UserViewSet(viewsets.ModelViewSet):
                 return Response({"message": "Invalid authentication token"}, status=status.HTTP_401_UNAUTHORIZED)
 
             # Get the user ID from the payload
-            user_id = payload['sub']
+            user_id = payload.get('sub')
+            if not user_id:
+                return Response({"message": "Invalid payload in token"}, status=status.HTTP_401_UNAUTHORIZED)
 
-            # Retrieve the user
-            user = User.objects.get(id=user_id)
+            # Retrieve the user object
+            user = get_object_or_404(User, id=user_id)
 
-            # Check if the user exists
-            if not user:
-                return Response({"message": "User not found"}, status=status.HTTP_404_NOT_FOUND)
+            # Serialize the logged-in user data
+            serializer = UserDetailsSerializer(user)
+            return Response(serializer.data, status=status.HTTP_200_OK)
 
-            # Retrieve the company details of the user
-            company = Company.objects.get(id=user.company_id)
-
-            # User details to return
-            user_details = {
-                'id': user.id,
-                'username': user.username,
-                'email': user.email,
-                'company_name': company.companyName,
-                'is_manager': user.is_manager,
-                'is_accounting_manager': user.is_accounting_manager,
-                'is_inventory_manager': user.is_inventory_manager,
-                'is_purchase_manager': user.is_purchase_manager,
-            }
-
-            return Response({'user_details': user_details}, status=status.HTTP_200_OK)
-
+>>>>>>> e5ef20e6faa5594b57c646fde9c033923d255356
         except Exception as e:
             return Response({"message": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
-    @action(detail=False, methods=['get'], permission_classes=[IsAuthenticated])
-    def getUserById(self, request, user_id):
+    @action(detail=True, methods=['post'])
+    def deleteUser(self, request, pk=None):
         try:
-            token = request.COOKIES.get('jwt')
+            user = self.get_object()
 
+            if user.is_superuser:
+                return Response({"message": "Cannot delete superuser"}, status=status.HTTP_400_BAD_REQUEST)
+
+            user.delete()
+
+            return Response({'status': 'user deleted'})
+        except Exception as e:
+            return Response({"message": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+    @action(detail=False, methods=['post'])
+    def sign_out(self, request):
+        try:
+            token = request.headers.get('Authorization', '').split(' ')[1]
             if not token:
-                return Response({"message": "Authentication token is missing"}, status=400)
+                return Response({"message": "Authentication token not provided"}, status=status.HTTP_401_UNAUTHORIZED)
 
             try:
                 payload = jwt.decode(token, 'secret', algorithms=['HS256'])
             except jwt.ExpiredSignatureError:
-                return Response({"message": "Token has expired"}, status=401)
+                return Response({"message": "Authentication token has expired"}, status=status.HTTP_401_UNAUTHORIZED)
             except jwt.InvalidTokenError:
-                return Response({"message": "Invalid token"}, status=401)
+                return Response({"message": "Invalid authentication token"}, status=status.HTTP_401_UNAUTHORIZED)
 
+            user_id = payload['sub']
             user = get_object_or_404(User, id=user_id)
-            company = Company.objects.get(id=user.company_id)
 
-            user_details = {
-                'username': user.username,
-                'email': user.email,
-                'role': 'Manager' if user.is_manager else
-                'Accounting Manager' if user.is_accounting_manager else
-                'Inventory Manager' if user.is_inventory_manager else
-                'Purchase Manager' if user.is_purchase_manager else
-                'User',
-                'company_name': company.name
+            login_time = timezone.now()
+
+            temp_session = {
+                'user_id': str(user.id),
+                'login_time': login_time.isoformat()
             }
 
-            return Response(user_details, status=200)
+            response = Response()
+            response.set_cookie(key='temp_session', value=json.dumps(temp_session), httponly=True)
+            response.delete_cookie('jwt')
+            logout(request)
+            response.data = {'message': 'User signed out temporarily'}
+            return response
         except Exception as e:
             return Response({"message": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
     @action(detail=False, methods=['post'])
-    def forgotPassword(self, request):
+    def sign_in(self, request):
         try:
-            username_or_email = request.data.get('username') or request.data.get('email')
-            if not username_or_email:
-                raise ValidationError('Username or email is required')
+            temp_session = request.COOKIES.get('temp_session')
+            if not temp_session:
+                return Response({"message": "Temporary session not found"}, status=status.HTTP_400_BAD_REQUEST)
 
-            user = User.objects.filter(Q(username=username_or_email) | Q(email=username_or_email)).first()
-            if not user:
-                return Response({'status': 'user not found'}, status=status.HTTP_404_NOT_FOUND)
+            try:
+                temp_session = json.loads(temp_session)
+            except:
+                return Response({"message": "Invalid temporary session data"}, status=status.HTTP_400_BAD_REQUEST)
 
-            # Get or create the OTP record for the user
-            user_otp, created = UserOTP.objects.get_or_create(user=user)
+            password = request.data.get('password')
+            if not password:
+                return Response({"message": "Password not provided"}, status=status.HTTP_400_BAD_REQUEST)
 
-            # Generate and save the OTP
-            user_otp.generate_otp()
+            user_id = temp_session.get('user_id')
+            login_time = temp_session.get('login_time')
 
-            # Send email with OTP
-            send_mail(
-                'Password Reset Request',
-                f'Your one-time password (OTP) to reset your password is: {user_otp.otp}',
-                'from@example.com',
-                [user.email],
-                fail_silently=False,
-            )
+            if not user_id or not login_time:
+                return Response({"message": "Invalid temporary session data"}, status=status.HTTP_400_BAD_REQUEST)
 
-            return Response({'status': 'otp sent'}, status=status.HTTP_200_OK)
+            user = get_object_or_404(User, id=user_id)
+            user = authenticate(username=user.username, password=password)
+
+            if user is None:
+                return Response({"message": "Invalid password"}, status=status.HTTP_401_UNAUTHORIZED)
+
+<<<<<<< HEAD
+            refresh = RefreshToken.for_user(user)
+=======
+            # Create JWT token
+            payload = {
+                'sub': str(user.id),
+                'iat': timezone.now(),
+                'exp': timezone.now() + timezone.timedelta(hours=1)
+            }
+            token = jwt.encode(payload, 'secret', algorithm='HS256')
+>>>>>>> e5ef20e6faa5594b57c646fde9c033923d255356
+
+            login(request, user)
+
+            response = Response()
+            response.set_cookie(key='jwt', value=str(refresh.access_token), httponly=True)
+            response.delete_cookie('temp_session')
+            response.data = {
+                'message': 'User signed in successfully and session resumed',
+                'refresh': str(refresh),
+                'access': str(refresh.access_token)
+            }
+
+            return response
+
         except Exception as e:
             return Response({"message": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
-    @action(detail=False, methods=['post'])
-    def forgotPasswordOtpVerification(self, request):
+    @action(detail=False, methods=['get'])
+    def getAllUsers(self, request):
         try:
-            otp = request.data.get('otp')
-            if not otp:
-                return Response({'message': 'OTP is required'}, status=status.HTTP_400_BAD_REQUEST)
+            users = User.objects.all().select_related('company')
+            user_list = []
 
-            user_otp = UserOTP.objects.filter(otp=otp).first()
+            for user in users:
+                if user.is_superuser:
+                    role = 'superuser'
+                elif user.is_manager:
+                    role = 'manager'
+                elif user.is_accounting_manager:
+                    role = 'accounting_manager'
+                elif user.is_inventory_manager:
+                    role = 'inventory_manager'
+                elif user.is_purchase_manager:
+                    role = 'purchase_manager'
+                else:
+                    role = 'user'
 
-            if not user_otp:
-                return Response({'message': 'User not found or OTP is incorrect'}, status=status.HTTP_404_NOT_FOUND)
+                user_details = {
+                    'id': user.id,
+                    'username': user.username,
+                    'email': user.email,
+                    'role': role,
+                    'last_name': user.last_name,
+                    'is_active': user.is_active,
+                    'company_name': user.company.name if user.company else None
+                }
+                user_list.append(user_details)
 
-            # Check if OTP has expired (assuming OTP is valid for 10 minutes)
-            otp_age = timezone.now() - user_otp.created_at
-            if otp_age.seconds > 6000:
-                return Response({'message': 'OTP has expired'}, status=status.HTTP_400_BAD_REQUEST)
-
-            user = user_otp.user
-            user.is_active = True
-            user.save()
-
-            # Clean up the OTP after successful verification
-            user_otp.otp = None
-            user_otp.save()
-
-            return Response({'message': 'Account verified successfully'}, status=status.HTTP_200_OK)
+            return Response(user_list, status=status.HTTP_200_OK)
         except Exception as e:
-            return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"message": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
     @action(detail=False, methods=['post'])
     def newPassword(self, request):
@@ -396,7 +582,6 @@ class UserViewSet(viewsets.ModelViewSet):
             if new_password != confirm_password:
                 raise ValidationError('Passwords do not match.')
 
-            # Locate user by username or email
             username_or_email = request.data.get('username') or request.data.get('email')
             if not username_or_email:
                 raise ValidationError('Username or email is required.')
@@ -405,7 +590,6 @@ class UserViewSet(viewsets.ModelViewSet):
             if not user:
                 return Response({'message': 'User not found.'}, status=status.HTTP_404_NOT_FOUND)
 
-            # Update the user's password
             user.password = make_password(new_password)
             user.save()
 
@@ -416,83 +600,150 @@ class UserViewSet(viewsets.ModelViewSet):
             return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
     @action(detail=False, methods=['post'])
-    def logout(self, request):
+    def forgotPasswordOtpVerification(self, request):
         try:
-            logout(request)
-            return Response({'status': 'logged out'})
+            otp = request.data.get('otp')
+            if not otp:
+                return Response({'message': 'OTP is required'}, status=status.HTTP_400_BAD_REQUEST)
+
+            user_otp = UserOTP.objects.filter(otp=otp).first()
+
+            if not user_otp:
+                return Response({'message': 'User not found or OTP is incorrect'}, status=status.HTTP_404_NOT_FOUND)
+
+            otp_age = timezone.now() - user_otp.created_at
+            if otp_age.total_seconds() > 600:
+                return Response({'message': 'OTP has expired'}, status=status.HTTP_400_BAD_REQUEST)
+
+            user = user_otp.user
+            user.is_active = True
+            user.save()
+
+            user_otp.delete()
+
+            return Response({'message': 'Account verified successfully'}, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+    @action(detail=False, methods=['post'])
+    def forgotPassword(self, request):
+        try:
+            username_or_email = request.data.get('username') or request.data.get('email')
+            if not username_or_email:
+                raise ValidationError('Username or email is required')
+
+            user = User.objects.filter(Q(username=username_or_email) | Q(email=username_or_email)).first()
+            if not user:
+                return Response({'status': 'user not found'}, status=status.HTTP_404_NOT_FOUND)
+
+            otp = ''.join(random.choices(string.digits, k=6))
+
+            user_otp, created = UserOTP.objects.get_or_create(user=user)
+            user_otp.otp = otp
+            user_otp.created_at = timezone.now()
+            user_otp.save()
+
+            send_mail(
+                'Password Reset Request',
+                f'Your one-time password (OTP) to reset your password is: {otp}',
+                'from@example.com',
+                [user.email],
+                fail_silently=False,
+            )
+
+            return Response({'status': 'otp sent'}, status=status.HTTP_200_OK)
         except Exception as e:
             return Response({"message": str(e)}, status=status.HTTP_400_BAD_REQUEST)
-
-    @action(detail=False, methods=['get'])
-    def getAllUsers(self, request):
-        try:
-            users = User.objects.all()
-            user_list = []
-
-            for user in users:
-                company = get_object_or_404(Company, id=user.company_id)
-                user_details = {
-                    'id': user.id,
-                    'username': user.username,
-                    'email': user.email,
-                    'role': 'Manager' if user.is_manager else
-                    'Accounting Manager' if user.is_accounting_manager else
-                    'Inventory Manager' if user.is_inventory_manager else
-                    'Purchase Manager' if user.is_purchase_manager else
-                    'User',
-                    'company': company.name,
-                    'is_active': user.is_active,
-                    'date_joined': user.date_joined
-                }
-                user_list.append(user_details)
-
-            return Response(user_list, status=status.HTTP_200_OK)
-        except Exception as e:
-            return Response({"message": str(e)}, status=status.HTTP_400_BAD_REQUEST)
-
-    @action(detail=False, methods=['put'])
-    def updateUser(self, request, user_id):
-        try:
-            user = get_object_or_404(User, id=user_id)
-            data = request.data
-            allowed_fields = ['username', 'email', 'role']
-            updated_data = {field: data[field] for field in allowed_fields if field in data}
-
-            serializer = UserSerializer(user, data=updated_data, partial=True)
-            if serializer.is_valid():
-                serializer.save()
-                return Response(serializer.data, status=status.HTTP_200_OK)
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        except Exception as e:
-            return Response({"message": f"error: {str(e)}"}, status=status.HTTP_400_BAD_REQUEST)
-
-    @action(detail=False, methods=['delete'])
-    def delete(self, request, user_id):
-        user = get_object_or_404(User, user_id)
-        user.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
 
     @action(detail=False, methods=['get'])
     def roles(self, request):
         roles = [
-            {'label': 'Manager', 'value': 'Manager'},
-            {'label': 'Admin', 'value': 'Admin'},
-            {'label': 'User', 'value': 'User'},
-            {'label': 'Accounting Manager', 'value': 'Accounting Manager'},
-            {'label': 'Inventory Manager', 'value': 'Inventory Manager'},
-            {'label': 'Purchase Manager', 'value': 'Purchase Manager'}
+            {"name": "Manager"},
+            {"name": "Accounting Manager"},
+            {"name": "Inventory Manager"},
+            {"name": "Purchase Manager"},
         ]
         return Response(roles, status=status.HTTP_200_OK)
 
-    @action(detail=False, methods=['get'])
-    def authChecker(self, request):
+<<<<<<< HEAD
+=======
+    @action(detail=True, methods=['post'], url_path='upload-profile-picture')
+    def upload_profile_picture(self, request, pk=None):
+        user = self.get_object()
+        file = request.FILES.get('image')
+        if not file:
+            return Response({"detail": "No file provided"}, status=status.HTTP_400_BAD_REQUEST)
+
+        profile_picture, created = ProfilePicture.objects.get_or_create(user=user)
+        profile_picture.image = file
+        profile_picture.save()
+
+        return Response({"detail": "Profile picture uploaded successfully"}, status=status.HTTP_200_OK)
+
+    @action(detail=True, methods=['get'], url_path='get-profile-picture')
+    def get_profile_picture(self, request, pk=None):
+        user = self.get_object()
+        if not hasattr(user, 'profile_picture') or not user.profile_picture.image:
+            return Response({"detail": "No profile picture found"}, status=status.HTTP_404_NOT_FOUND)
+
+        response = HttpResponse(content_type='image/jpeg')
+        response['Content-Disposition'] = f'attachment; filename={user.profile_picture.image.name}'
+        response.write(user.profile_picture.image.read())
+        return response
+
+>>>>>>> e5ef20e6faa5594b57c646fde9c033923d255356
+    @action(detail=True, methods=['post'])
+    def change_password(self, request, pk=None):
+        user = self.get_object()
+        serializer = PasswordChangeSerializer(data=request.data)
+        if serializer.is_valid():
+            if not check_password(serializer.validated_data['current_password'], user.password):
+                return Response({"detail": "Current password is incorrect"}, status=status.HTTP_400_BAD_REQUEST)
+            user.password = make_password(serializer.validated_data['new_password'])
+            user.save()
+            send_mail(
+                'Password Changed',
+                'Your password has been changed successfully.',
+                'from@example.com',
+                [user.email],
+                fail_silently=False,
+            )
+            return Response({"detail": "Password updated successfully"}, status=status.HTTP_200_OK)
+<<<<<<< HEAD
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    @action(detail=False, methods=['post'])
+    def update_user_info(self, request):
+        token = request.headers.get('Authorization', '').split(' ')[1]
+
         try:
-            user = request.user
-            user_data = {
-                "name": user.username,
-                "email": user.email,
-                "role": user.roles
-            }
-            return Response({"isAuthenticated": True, "user": user_data}, status=status.HTTP_200_OK)
+            access_token = AccessToken(token)
+            user_id = access_token['user_id']
         except Exception as e:
-            return Response({"message": f"Error; {str(e)}"})
+            return Response({"detail": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+        user = get_object_or_404(User, pk=user_id)
+
+        serializer = UserSerializer(user, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    @action(detail=False, methods=['post'], permission_classes=[IsAuthenticated])
+    def upload_user_avatar(self, request, pk=None):
+        user = request.user
+
+        if not user.is_authenticated:
+            return Response({'detail': 'Authentication credentials were not provided.'},
+                            status=status.HTTP_401_UNAUTHORIZED)
+
+        serializer = UserAvatarSerializer(user, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+=======
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+>>>>>>> e5ef20e6faa5594b57c646fde9c033923d255356
