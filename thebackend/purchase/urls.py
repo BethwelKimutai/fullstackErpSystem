@@ -3,7 +3,7 @@ from .views import VendorViewSet, RequestForQuotationViewSet, PurchaseOrderViewS
 
 urlpatterns = [
     path('vendors/createvendors/', VendorViewSet.as_view({'post':'create_vendor'}), name='vendors'),
-    path('vendors/getvendors/', VendorViewSet.as_view({'get':'get_vendors'}), name='vendor-detail'),
+    path('vendors/getvendors/', VendorViewSet.as_view({'post':'get_vendors'}), name='vendor-detail'),
     path('rfqs/create/', RequestForQuotationViewSet.as_view({'post': 'create_rfq'}), name='create-rfq'),
     path('rfqs/', RequestForQuotationViewSet.as_view({'get': 'get_rfqs'}), name='get-rfqs'),
     path('rfqs/<int:pk>/print/', RequestForQuotationViewSet.as_view({'get': 'print_rfq'}), name='print-rfq'),

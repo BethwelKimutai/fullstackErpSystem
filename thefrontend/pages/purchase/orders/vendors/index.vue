@@ -48,6 +48,11 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
+import { storeToRefs } from 'pinia';
+import { useAuthStore } from '@/stores/auth';
+
+const authStore = useAuthStore();
+const { auth_user } = storeToRefs(authStore);
 
 const users = ref([])
 const searchQuery = ref("")
@@ -55,10 +60,13 @@ const router = useRouter()
 
 const fetchUsers = async () => {
   try {
-    const response = await fetch('http://127.0.0.1:8000/purchasebackend/vendors/getvendors/', {
-      method: "GET",
+    const response = await fetch('http://127.0.0.1:8000/purchasebackend/vendors/get_vendors/', {
+      method: "POST",
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
+      body: JSON.stringify({
+        company_id: auth_user.value.company_id
+      })
     })
 
     if (!response.ok) {
@@ -69,7 +77,7 @@ const fetchUsers = async () => {
     users.value = data
     window.dispatchEvent(new CustomEvent('auth', { detail: true }))
   } catch (e) {
-    await router.push('/Signup/login')
+    console.log(e);
     window.dispatchEvent(new CustomEvent('auth', { detail: false }))
   }
 }

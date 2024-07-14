@@ -10,7 +10,7 @@ class VendorSerializer(serializers.ModelSerializer):
         model = Vendor
         fields = ['id', 'type', 'name', 'company_name', 'contact_street1', 'contact_street2', 'contact_city',
                   'contact_state', 'contact_zip', 'contact_country', 'tax_id', 'job_position', 'phone', 'mobile',
-                  'email', 'website', 'title', 'tags']
+                  'email', 'website', 'title', 'tags', 'vendor_company']
 
 
 class VendorCreateSerializer(serializers.ModelSerializer):
@@ -42,7 +42,7 @@ class VendorCreateSerializer(serializers.ModelSerializer):
 class PurchaseOrderProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = PurchaseOrderProduct
-        fields = ['product', 'quantity', 'unit_price', 'subtotal']
+        fields = ['product', 'quantity', 'unit_price','UOM', 'subtotal']
 
 
 class RFQProductSerializer(serializers.ModelSerializer):

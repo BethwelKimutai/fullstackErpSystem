@@ -75,16 +75,6 @@
 
 </template>
 <script>
-import Profile from '/components/Profile.vue';
-
-export default {
-    components: {
-        Personal,
-        Profile
-
-    }
-
-};
 
 </script>
 

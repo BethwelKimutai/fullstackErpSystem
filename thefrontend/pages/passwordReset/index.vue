@@ -32,7 +32,7 @@
                 </div>
                 <hr class="mb-6 border-t" />
                 <div class="text-center">
-                  <nuxt-link to="/Signup/login" class="inline-block text-sm text-blue-500 align-baseline hover:text-blue-800">
+                  <nuxt-link to="/" class="inline-block text-sm text-blue-500 align-baseline hover:text-blue-800">
                     Already have an account? Login!
                   </nuxt-link>
                 </div>

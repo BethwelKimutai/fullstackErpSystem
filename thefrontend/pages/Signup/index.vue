@@ -51,7 +51,7 @@
         <button class="mt-4 w-full bg-yellow-500 font-semibold py-2 rounded-md tracking-wide">Sign Up</button>
         <div>
           <p class="mt-5 text-sm font-light text-yellow-500 dark:text-black">
-            Already have an account? <nuxt-link to="/Signup/login"
+            Already have an account? <nuxt-link to="/"
               class="font-medium text-primary-600 hover:underline dark:text-yellow-500">Login</nuxt-link>
           </p>
         </div>

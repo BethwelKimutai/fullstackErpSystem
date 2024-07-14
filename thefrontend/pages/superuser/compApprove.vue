@@ -82,7 +82,7 @@ const router = useRouter()
 
 const fetchCompanies = async () => {
     try {
-        const response = await fetch('http://127.0.0.1:8000/backend/companies/getallcompanies/', {
+        const response = await fetch('http://127.0.0.1:8000/backend/companies/getcompanies/', {
             method: "GET",
             headers: { 'Content-Type': 'application/json' },
             credentials: 'include',
@@ -95,7 +95,7 @@ const fetchCompanies = async () => {
         companies.value = await response.json()
         window.dispatchEvent(new CustomEvent('auth', { detail: true }))
     } catch (e) {
-        await router.push('/Signup/loginCompany')
+        await router.push('/superuser')
         window.dispatchEvent(new CustomEvent('auth', { detail: false }))
     }
 }

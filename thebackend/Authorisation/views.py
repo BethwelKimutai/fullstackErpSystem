@@ -1,28 +1,23 @@
-import token
-
-import jwt
 import random
 import string
 import uuid
 from datetime import datetime, timedelta
-import timedelta
 
+import jwt
 import phonenumbers
 from django.contrib.auth import login, logout, authenticate, get_user_model
 from django.contrib.auth.hashers import make_password, check_password
-from django.contrib.messages.storage import session
 from django.core.exceptions import ValidationError
 from django.core.mail import send_mail
 from django.core.serializers import json
 from django.db.models import Q
+from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
-from django.http import HttpResponse
 from phonenumbers.phonenumberutil import parse, format_number, region_code_for_number
 from pycountry import countries
-
 from rest_framework import status, viewsets
-from rest_framework.decorators import action
+from rest_framework.decorators import action, permission_classes, api_view
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken, AccessToken
@@ -30,10 +25,9 @@ from rest_framework_simplejwt.tokens import RefreshToken, AccessToken
 from thebackend import settings
 from .models import Company, User, UserOTP
 from .serializers import (
-    CompanySerializer, UserSerializer, UserDetailsSerializer, PasswordChangeSerializer,
-    UserAvatarSerializer, CompanyLogoSerializer, UserLoginSerializer
+    CompanySerializer, UserSerializer, PasswordChangeSerializer,
+    UserAvatarSerializer, CompanyLogoSerializer
 )
-from .utils import generate_jwt, decode_jwt
 
 User = get_user_model()
 
@@ -157,17 +151,19 @@ class UserViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=['post'])
     def login(self, request):
         try:
-            username = request.data.get('username').lower()
+            username = request.data.get('username')
             password = request.data.get('password')
 
             user = authenticate(username=username, password=password)
             if not user:
                 return Response({"message": "Invalid email or password"}, status=status.HTTP_401_UNAUTHORIZED)
 
-            jwt_token = generate_jwt(user)
+            company_id = str(user.company_id)
 
-            user_details = {
-                'id': str(user.id),
+            payload = {
+                'exp': datetime.utcnow() + timedelta(days=1),
+                'iat': datetime.utcnow(),
+                'sub': str(user.id),
                 'username': user.username,
                 'email': user.email,
                 'is_manager': user.is_manager,
@@ -175,21 +171,21 @@ class UserViewSet(viewsets.ModelViewSet):
                 'is_inventory_manager': user.is_inventory_manager,
                 'is_purchase_manager': user.is_purchase_manager,
                 'is_superuser': user.is_superuser,
-                'company_id': str(user.company_id) if user.company_id else None
+                'company_id': str(user.company_id)
             }
 
-            response_data = {
-                'access': jwt_token,
-                'user_details': user_details
+            tokens = jwt.encode(payload, settings.SECRET_KEY, algorithm='HS256')
+
+            if not user.is_superuser:
+                company = Company.objects.get(id=company_id)
+
+            response = Response()
+            response.set_cookie(key='jwt', value=tokens, httponly=True)
+            response.data = {
+                'jwt': tokens,
             }
 
-            request.session['jwt_token'] = jwt_token
-
-            serializer = UserLoginSerializer(data=response_data)
-            if serializer.is_valid():
-                return Response(serializer.data)
-            else:
-                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return JsonResponse({"jwt": tokens, "code": "200"})
 
         except Exception as e:
             return Response({"message": str(e)}, status=status.HTTP_400_BAD_REQUEST)
@@ -203,20 +199,38 @@ class UserViewSet(viewsets.ModelViewSet):
         except Exception as e:
             return Response({"message": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
-    @action(detail=False, methods=['get'])
+    @action(detail=False, methods=['post'])
     def getUsers(self, request):
         try:
-            sessionid = request.session.get(session)
-            for sessions in sessionid:
-                token = request.session.get('jwt_token')
-                if not token:
-                    return Response({"message": "User is not authenticated."}, status=status.HTTP_401_UNAUTHORIZED)
+            token = request.data.get('token')
+            if not token:
+                return Response({"message": "Token not provided"}, status=status.HTTP_401_UNAUTHORIZED)
 
-            user = self.decode_jwt(token)
-            if not user:
-                return Response({"message": "User is not authenticated."}, status=status.HTTP_401_UNAUTHORIZED)
+            # Decode the JWT token
+            try:
+                payload = jwt.decode(token, settings.SECRET_KEY, algorithms=['HS256'])
+            except jwt.ExpiredSignatureError:
+                return Response({"message": "Token has expired"}, status=status.HTTP_401_UNAUTHORIZED)
+            except jwt.InvalidTokenError:
+                return Response({"message": "Invalid token"}, status=status.HTTP_401_UNAUTHORIZED)
 
-            return Response(user, status=status.HTTP_200_OK)
+            # Fetch the user details from the payload
+            user_id = payload.get('sub')
+            user = User.objects.get(id=user_id)
+
+            user_details = {
+                'id': user.id,
+                'username': user.username,
+                'email': user.email,
+                'is_manager': user.is_manager,
+                'is_accounting_manager': user.is_accounting_manager,
+                'is_inventory_manager': user.is_inventory_manager,
+                'is_purchase_manager': user.is_purchase_manager,
+                'is_superuser': user.is_superuser,
+                'company_id': str(user.company_id)
+            }
+
+            return JsonResponse({"user": user_details, "code": "200"})
 
         except Exception as e:
             return Response({"message": str(e)}, status=status.HTTP_400_BAD_REQUEST)

@@ -179,11 +179,9 @@ class ReceiptViewSet(viewsets.ModelViewSet):
 
     @action(detail=False, methods=['post'])
     def create_receipt(self, request):
-        data = request.data
-        company_id = request.COOKIES.get('company_id')
-        user_id = request.COOKIES.get('id')
-        data['company'] = company_id
-        data['user'] = user_id
+        data = request.data.copy()
+        data['company'] = request.user.company_id
+        data['user'] = request.user.id
         serializer = ReceiptSerializer(data=data)
         if serializer.is_valid():
             serializer.save()
@@ -228,11 +226,9 @@ class DeliveryViewSet(viewsets.ModelViewSet):
 
     @action(detail=False, methods=['post'])
     def create_delivery(self, request):
-        data = request.data
-        company_id = request.COOKIES.get('company_id')
-        user_id = request.COOKIES.get('id')
-        data['company'] = company_id
-        data['user'] = user_id
+        data = request.data.copy()
+        data['company'] = request.user.company_id
+        data['user'] = request.user.id
         serializer = DeliverySerializer(data=data)
         if serializer.is_valid():
             serializer.save()
@@ -277,11 +273,9 @@ class InternalTransferViewSet(viewsets.ModelViewSet):
 
     @action(detail=False, methods=['post'])
     def create_internal_transfer(self, request):
-        data = request.data
-        company_id = request.COOKIES.get('company_id')
-        user_id = request.COOKIES.get('id')
-        data['company'] = company_id
-        data['user'] = user_id
+        data = request.data.copy()
+        data['company'] = request.user.company_id
+        data['user'] = request.user.id
         serializer = InternalTransferSerializer(data=data)
         if serializer.is_valid():
             serializer.save()
@@ -326,12 +320,10 @@ class PhysicalInventoryViewSet(viewsets.ModelViewSet):
 
     @action(detail=False, methods=['post'])
     def create_physical_inventory(self, request):
-        data = request.data
-        company_id = request.COOKIES.get('company_id')
-        user_id = request.COOKIES.get('id')
-        data['company'] = company_id
-        data['user'] = user_id
-        data['difference'] = data['counted_quantity'] - data['on_hand_quantity']
+        data = request.data.copy()
+        data['company'] = request.user.company_id
+        data['user'] = request.user.id
+        data['difference'] = data.get('counted_quantity', 0) - data.get('on_hand_quantity', 0)
         serializer = PhysicalInventorySerializer(data=data)
         if serializer.is_valid():
             serializer.save()
@@ -349,8 +341,7 @@ class PhysicalInventoryViewSet(viewsets.ModelViewSet):
         try:
             physical_inventory = self.get_object()
             data = request.data.copy()
-            data['difference'] = data.get('counted_quantity', physical_inventory.counted_quantity) - data.get(
-                'on_hand_quantity', physical_inventory.on_hand_quantity)
+            data['difference'] = data.get('counted_quantity', physical_inventory.counted_quantity) - data.get('on_hand_quantity', physical_inventory.on_hand_quantity)
             serializer = PhysicalInventorySerializer(physical_inventory, data=data, partial=True)
             if serializer.is_valid():
                 serializer.save()
@@ -377,9 +368,8 @@ class ScrapViewSet(viewsets.ModelViewSet):
 
     @action(detail=False, methods=['post'])
     def create_scrap(self, request):
-        data = request.data
-        company_id = request.COOKIES.get('company_id')
-        data['company'] = company_id
+        data = request.data.copy()
+        data['company'] = request.user.company_id
         serializer = ScrapSerializer(data=data)
         if serializer.is_valid():
             serializer.save()
@@ -413,7 +403,6 @@ class ScrapViewSet(viewsets.ModelViewSet):
             return Response(status=status.HTTP_204_NO_CONTENT)
         except Exception as e:
             return Response({"message": f"Error: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
 class LandedCostViewSet(viewsets.ModelViewSet):
     serializer_class = LandedCostSerializer
 
@@ -423,9 +412,8 @@ class LandedCostViewSet(viewsets.ModelViewSet):
 
     @action(detail=False, methods=['post'])
     def create_landed_cost(self, request):
-        data = request.data
-        company_id = request.COOKIES.get('company_id')
-        data['company'] = company_id
+        data = request.data.copy()
+        data['company'] = request.user.company_id
         serializer = LandedCostSerializer(data=data)
         if serializer.is_valid():
             serializer.save()
@@ -464,13 +452,6 @@ class LandedCostViewSet(viewsets.ModelViewSet):
 class ProductAttributeViewSet(viewsets.ModelViewSet):
     serializer_class = ProductAttributeSerializer
 
-    def decode_jwt(self, token):
-        try:
-            access_token = AccessToken(token)
-            return access_token
-        except Exception as e:
-            raise ValueError(f"Error decoding token: {str(e)}")
-
     def get_queryset(self):
         user = self.request.user
         return ProductAttribute.objects.filter(product__company=user.company)
@@ -478,31 +459,9 @@ class ProductAttributeViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=['post'])
     def create_product_attribute(self, request):
         try:
-            token = request.COOKIES.get('jwt')
-            if not token:
-                return Response({"message": "JWT token not found in cookies"}, status=status.HTTP_400_BAD_REQUEST)
-
-            decoded_token = self.decode_jwt(token)
-            company_id = decoded_token.get('company_id')
-            if not company_id:
-                return Response({"message": "Company ID not found in token"}, status=status.HTTP_400_BAD_REQUEST)
-
-            # Convert company_id to UUID if necessary
-            try:
-                company_id = str(uuid.UUID(company_id))
-            except ValueError as e:
-                return Response({"message": f"Invalid company_id format: {str(e)}"}, status=status.HTTP_400_BAD_REQUEST)
-
-            # Fetch the Company instance
-            try:
-                company = Company.objects.get(id=company_id)
-            except Company.DoesNotExist:
-                return Response({"message": "Company not found"}, status=status.HTTP_404_NOT_FOUND)
-
-            data = request.data
-            data['company_id'] = company_id  # Include company_id in the data payload
+            data = request.data.copy()
+            data['company_id'] = str(request.user.company_id)
             serializer = ProductAttributeSerializer(data=data)
-
             if serializer.is_valid():
                 serializer.save()
                 return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -541,13 +500,6 @@ class ProductAttributeViewSet(viewsets.ModelViewSet):
 class UnitOfMeasureCategoryViewSet(viewsets.ModelViewSet):
     serializer_class = UnitOfMeasureCategorySerializer
 
-    def decode_jwt(self, token):
-        try:
-            access_token = AccessToken(token)
-            return access_token
-        except Exception as e:
-            raise ValueError(f"Error decoding token: {str(e)}")
-
     def get_queryset(self):
         user = self.request.user
         return UnitOfMeasureCategory.objects.filter(company=user.company)
@@ -555,29 +507,9 @@ class UnitOfMeasureCategoryViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=['post'])
     def create_unit_of_measure_category(self, request):
         try:
-            token = request.COOKIES.get('jwt')
-            if not token:
-                return Response({"message": "JWT token not found in cookies"}, status=status.HTTP_400_BAD_REQUEST)
-
-            decoded_token = self.decode_jwt(token)
-            company_id = decoded_token.get('company_id')
-            if not company_id:
-                return Response({"message": "Company ID not found in token"}, status=status.HTTP_400_BAD_REQUEST)
-
-            try:
-                company_id = str(uuid.UUID(company_id))
-            except ValueError as e:
-                return Response({"message": f"Invalid company_id format: {str(e)}"}, status=status.HTTP_400_BAD_REQUEST)
-
-            try:
-                company = Company.objects.get(id=company_id)
-            except Company.DoesNotExist:
-                return Response({"message": "Company not found"}, status=status.HTTP_404_NOT_FOUND)
-
-            data = request.data
-            data['company_id'] = company_id
+            data = request.data.copy()
+            data['company_id'] = str(request.user.company_id)
             serializer = UnitOfMeasureCategorySerializer(data=data)
-
             if serializer.is_valid():
                 serializer.save()
                 return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -617,13 +549,6 @@ class UnitOfMeasureCategoryViewSet(viewsets.ModelViewSet):
 class ProductPackagingViewSet(viewsets.ModelViewSet):
     serializer_class = ProductPackagingSerializer
 
-    def decode_jwt(self, token):
-        try:
-            access_token = AccessToken(token)
-            return access_token
-        except Exception as e:
-            raise ValueError(f"Error decoding token: {str(e)}")
-
     def get_queryset(self):
         user = self.request.user
         return ProductPackaging.objects.filter(product__company=user.company)
@@ -631,29 +556,9 @@ class ProductPackagingViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=['post'])
     def create_product_packaging(self, request):
         try:
-            token = request.COOKIES.get('jwt')
-            if not token:
-                return Response({"message": "JWT token not found in cookies"}, status=status.HTTP_400_BAD_REQUEST)
-
-            decoded_token = self.decode_jwt(token)
-            company_id = decoded_token.get('company_id')
-            if not company_id:
-                return Response({"message": "Company ID not found in token"}, status=status.HTTP_400_BAD_REQUEST)
-
-            try:
-                company_id = str(uuid.UUID(company_id))
-            except ValueError as e:
-                return Response({"message": f"Invalid company_id format: {str(e)}"}, status=status.HTTP_400_BAD_REQUEST)
-
-            try:
-                company = Company.objects.get(id=company_id)
-            except Company.DoesNotExist:
-                return Response({"message": "Company not found"}, status=status.HTTP_404_NOT_FOUND)
-
-            data = request.data
-            data['company'] = company_id
+            data = request.data.copy()
+            data['company'] = str(request.user.company_id)
             serializer = ProductPackagingSerializer(data=data)
-
             if serializer.is_valid():
                 serializer.save()
                 return Response(serializer.data, status=status.HTTP_201_CREATED)

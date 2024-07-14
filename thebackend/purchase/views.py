@@ -27,24 +27,10 @@ class VendorViewSet(viewsets.ModelViewSet):
     queryset = Vendor.objects.all()
     serializer_class = VendorSerializer
 
-    @action(detail=False, methods=['get'])
+    @action(detail=False, methods=['post'])
     def get_vendors(self, request):
         try:
-            token = request.session.get('jwt_token')
-            if not token:
-                return Response({"message": "JWT token not found in session"}, status=status.HTTP_400_BAD_REQUEST)
-
-            decoded_token = self.decode_jwt(token)
-            company_id = decoded_token.get('company_id')
-            if not company_id:
-                return Response({"message": "Company ID not found in token"}, status=status.HTTP_400_BAD_REQUEST)
-
-            # Convert company_id to UUID if necessary
-            try:
-                company_id = str(uuid.UUID(company_id))
-            except ValueError as e:
-                return Response({"message": f"Invalid company_id format: {str(e)}"}, status=status.HTTP_400_BAD_REQUEST)
-
+            company_id = request.data.get('company_id')
             vendors = Vendor.objects.filter(vendor_company=company_id)
             serialized_vendors = []
 
@@ -68,49 +54,29 @@ class VendorViewSet(viewsets.ModelViewSet):
             return Response(serialized_vendors)
 
         except Exception as e:
-            return Response({"message": f"Error {str(e)}"})
+            return Response({"message": f"Error {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     @action(detail=False, methods=['post'])
     def create_vendor(self, request):
         try:
-            token = request.COOKIES.get('jwt')
-            if not token:
-                return Response({"message": "JWT token not found in cookies"}, status=status.HTTP_400_BAD_REQUEST)
-
-            decoded_token = self.decode_jwt(token)
-            company_id = decoded_token.get('company_id')
-            if not company_id:
-                return Response({"message": "Company ID not found in token"}, status=status.HTTP_400_BAD_REQUEST)
-
-            # Convert company_id to UUID if necessary
-            try:
-                company_id = str(uuid.UUID(company_id))
-            except ValueError as e:
-                return Response({"message": f"Invalid company_id format: {str(e)}"}, status=status.HTTP_400_BAD_REQUEST)
-
-            # Fetch the Company instance
-            try:
-                company = Company.objects.get(id=company_id)
-            except Company.DoesNotExist:
-                return Response({"message": "Company not found"}, status=status.HTTP_404_NOT_FOUND)
-
             serializer = VendorCreateSerializer(data=request.data)
+            print(f"this is the data sent from frontend{serializer}")
             if serializer.is_valid():
                 vendor_data = serializer.validated_data
                 vendor_type = vendor_data['type']
+                company_id = vendor_data['vendor_company']
 
                 if vendor_type == 'individual':
                     existing_vendor = Vendor.objects.filter(
                         type='individual',
                         name=vendor_data['name'],
-                        company_name=vendor_data['company_name'],
-                        vendor_company=company
+                        vendor_company=company_id
                     ).exists()
                 elif vendor_type == 'company':
                     existing_vendor = Vendor.objects.filter(
                         type='company',
                         company_name=vendor_data['company_name'],
-                        vendor_company=company
+                        vendor_company=company_id
                     ).exists()
 
                 if existing_vendor:
@@ -119,16 +85,12 @@ class VendorViewSet(viewsets.ModelViewSet):
                         status=status.HTTP_400_BAD_REQUEST
                     )
 
-                vendor_data['vendor_company'] = company
-                # Debugging statement before saving
-                print(f"vendor_data before saving: {vendor_data}")
-
                 serializer.save()
                 return Response({"message": "Vendor successfully created"}, status=status.HTTP_201_CREATED)
 
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
-            return Response({"message": f"Error {str(e)}"})
+            return Response({"message": f"Error {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 class RequestForQuotationViewSet(viewsets.ModelViewSet):
@@ -332,6 +294,7 @@ class PurchaseOrderViewSet(viewsets.ModelViewSet):
             logger.error(f"Error sending email for PO {po.reference}: {e}")
             return False
 
+
 class VendorPriceListViewSet(viewsets.ModelViewSet):
     serializer_class = VendorPriceListSerializer
 
@@ -371,6 +334,7 @@ class VendorPriceListViewSet(viewsets.ModelViewSet):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
             return Response({"message": f"An error occurred: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
     @action(detail=False, methods=['get'])
     def get_vendor_price_lists(self, request):
         price_lists = self.get_queryset()

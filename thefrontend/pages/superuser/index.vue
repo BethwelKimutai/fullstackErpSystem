@@ -1,6 +1,6 @@
 <template>
-    <div>
-        <div class="py-16 bg-gray-50 overflow-hidden">
+    <div class="bg-white">
+        <div class="py-16 bg-grey-50 overflow-hidden ">
             <div class="container mx-auto px-6 space-y-8 text-gray-500 md:px-12">
                 <div>
                     <nuxt-link to="/superuser/compApprove"

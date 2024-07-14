@@ -103,7 +103,7 @@ export default {
 
                 if (response.ok) {
                     alert('Password updated successfully.');
-                    await this.$router.push('/Signup/login');
+                    await this.$router.push('/');
 
                 } else {
                     alert(result.message || 'Error updating password.');

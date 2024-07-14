@@ -117,7 +117,7 @@ const fetchUsers = async () => {
     users.value = data
     window.dispatchEvent(new CustomEvent('auth', { detail: true }))
   } catch (e) {
-    await router.push('/Signup/login')
+    await router.push('/')
     window.dispatchEvent(new CustomEvent('auth', { detail: false }))
   }
 }

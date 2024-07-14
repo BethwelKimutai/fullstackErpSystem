@@ -70,17 +70,7 @@
   </div>
 </template>
 <script>
-import Personal from '/components/Personal.vue';
-import Profile from '/components/Profile.vue';
 
-export default{
-  components :{
-    Personal,
-    Profile
-
-  }
-
-};
 </script>
 
 <style scoped>

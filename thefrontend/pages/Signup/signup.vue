@@ -34,7 +34,7 @@
                 <button class="mt-4 w-full bg-yellow-500 font-semibold py-2 rounded-md  tracking-wide">Signup</button>
                 <div>
                     <p class="mt-5 text-sm font-light text-yellow-500 dark:text-black">
-                        Already have an account? <nuxt-link to="/Signup/login"
+                        Already have an account? <nuxt-link to="/"
                             class="font-medium text-primary-600 hover:underline dark:text-yellow-500">Login
                         </nuxt-link>
                     </p>
@@ -70,7 +70,7 @@ export default {
     },
     methods: {
         async fetchJobTitles() {
-            const response = await fetch('http://127.0.0.1:8000/jikoTrack/jobTitles'); // Add this line (ensure this endpoint exists and returns job titles)
+            const response = await fetch('http://127.0.0.1:8000/jikoTrack/jobTitles'); 
             const data = await response.json();
             this.jobTitles = data;
         },
