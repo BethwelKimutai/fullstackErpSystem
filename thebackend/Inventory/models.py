@@ -14,11 +14,13 @@ class ProductCategory(models.Model):
     company = models.ForeignKey(Company, on_delete=models.CASCADE)
 
 
+
 class ProductTemplate(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=255)
     description = models.TextField(null=True, blank=True)
     company = models.ForeignKey(Company, on_delete=models.CASCADE)
+
 
 
 class Product(models.Model):

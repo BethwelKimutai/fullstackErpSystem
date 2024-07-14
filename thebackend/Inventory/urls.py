@@ -11,8 +11,11 @@ urlpatterns = [
     path('products/delete/<int:pk>/', ProductViewSet.as_view({'delete': 'delete_product'}), name='delete-product'),
     path('products/createpc/', ProductViewSet.as_view({'post': 'create_product_category'}), name='create-pc'),
     path('products/getpc/', ProductViewSet.as_view({'get': 'get_product_categories'}), name='get-pc'),
+<<<<<<< HEAD
     path('products/updatepc/<uuid:pk>/', ProductViewSet.as_view({'put': 'update_product_category'}), name='update-pc'),
     path('products/deletepc/<uuid:pk>/', ProductViewSet.as_view({'delete': 'delete_product_category'}), name='delete-pc'),
+=======
+>>>>>>> e5ef20e6faa5594b57c646fde9c033923d255356
     path('products/createtemplate/', ProductViewSet.as_view({'post': 'create_product_template'}), name='create-template'),
     path('products/gettemplate/', ProductViewSet.as_view({'get': 'get_product_templates'}), name='get-template'),
     path('products/replenish/', ProductViewSet.as_view({'post': 'replenish'}), name='replenish-order'),
@@ -36,6 +39,7 @@ urlpatterns = [
     path('physical-inventory/delete/<int:pk>/', PhysicalInventoryViewSet.as_view({'delete': 'delete_physical_inventory'}), name='delete-physical-inventory'),
     path('scrap/create/', ScrapViewSet.as_view({'post': 'create_scrap'}), name='create-scrap'),
     path('scrap/', ScrapViewSet.as_view({'get': 'get_scraps'}), name='get-scraps'),
+<<<<<<< HEAD
     path('scrap/update/<uuid:pk>/', ScrapViewSet.as_view({'put': 'update_scrap'}), name='update-scrap'),
     path('scrap/delete/<uuid:pk>/', ScrapViewSet.as_view({'delete': 'delete_scrap'}), name='delete-scrap'),
     path('landed-costs/create/', LandedCostViewSet.as_view({'post': 'create_landed_cost'}), name='create-landed-cost'),
@@ -62,4 +66,32 @@ urlpatterns = [
     path('bcn/get/', BarcodeNomenclatureViewSet.as_view({'get': 'get_barcode_nomenclatures'}), name='get-bcn'),
     path('bcn/update/<uuid:pk>/', BarcodeNomenclatureViewSet.as_view({'put': 'update_barcode_nomenclature'}), name='update-bcn'),
     path('bcn/delete/<uuid:pk>/', BarcodeNomenclatureViewSet.as_view({'delete': 'delete_barcode_nomenclature'}), name='delete-bcn'),
+=======
+    path('scrap/update/<int:pk>/', ScrapViewSet.as_view({'put': 'update_scrap'}), name='update-scrap'),
+    path('scrap/delete/<int:pk>/', ScrapViewSet.as_view({'delete': 'delete_scrap'}), name='delete-scrap'),
+    path('landed-costs/create/', LandedCostViewSet.as_view({'post': 'create_landed_cost'}), name='create-landed-cost'),
+    path('landed-costs/get/', LandedCostViewSet.as_view({'get': 'get_landed_costs'}), name='get-landed-costs'),
+    path('landed-costs/update/<int:pk>/', LandedCostViewSet.as_view({'put': 'update_landed_cost'}), name='update-landed-cost'),
+    path('landed-costs/delete/<int:pk>/', LandedCostViewSet.as_view({'delete': 'delete_landed_cost'}), name='delete-landed-cost'),
+    path('productAttribute/create/', ProductAttributeViewSet.as_view({'post': 'create_product_attribute'}), name='create-product-attribute'),
+    path('productAttribute/get/', ProductAttributeViewSet.as_view({'get': 'get_product_attributes'}), name='get-product-attribute'),
+    path('productAttribute/update/<int:pk>/', ProductAttributeViewSet.as_view({'put': 'update_product_attribute'}), name='update-product-attribute'),
+    path('productAttribute/delete/<int:pk>/', ProductAttributeViewSet.as_view({'delete': 'delete_product_attribute'}), name='delete-product-attribute'),
+    path('UoM/create/', UnitOfMeasureCategoryViewSet.as_view({'post': 'create_unit_of_measure_category'}), name='create-UoM'),
+    path('UoM/get/', UnitOfMeasureCategoryViewSet.as_view({'get': 'get_unit_of_measure_categories'}), name='get-UoM'),
+    path('UoM/update/<int:pk>/', UnitOfMeasureCategoryViewSet.as_view({'put': 'update_unit_of_measure_category'}), name='update-UoM'),
+    path('UoM/delete/<int:pk>/', UnitOfMeasureCategoryViewSet.as_view({'delete': 'delete_unit_of_measure_category'}), name='delete-UoM'),
+    path('productpackaging/create/', ProductPackagingViewSet.as_view({'post': 'create_product_packaging'}), name='create-pp'),
+    path('productpackaging/get/', ProductPackagingViewSet.as_view({'get': 'get_product_packaging'}), name='get-pp'),
+    path('productpackaging/update/<int:pk>/', ProductPackagingViewSet.as_view({'put': 'update_product_packaging'}), name='update-pp'),
+    path('productpackaging/delete/<int:pk>/', ProductPackagingViewSet.as_view({'delete': 'delete_product_packaging'}), name='delete-pp'),
+    path('rrv/create/', ReorderingRuleViewSet.as_view({'post': 'create_reordering_rule'}), name='create-rrv'),
+    path('rrv/get/', ReorderingRuleViewSet.as_view({'get': 'get_reordering_rules'}), name='get-rrv'),
+    path('rrv/update/<int:pk>/', ReorderingRuleViewSet.as_view({'put': 'update_reordering_rule'}), name='update-rrv'),
+    path('rrv/delete/<int:pk>/', ReorderingRuleViewSet.as_view({'delete': 'delete_reordering_rule'}), name='delete-rrv'),
+    path('bcn/create/', BarcodeNomenclatureViewSet.as_view({'post': 'create_barcode_nomenclature'}), name='create-bcn'),
+    path('bcn/get/', BarcodeNomenclatureViewSet.as_view({'get': 'get_barcode_nomenclatures'}), name='get-bcn'),
+    path('bcn/update/<int:pk>/', BarcodeNomenclatureViewSet.as_view({'put': 'update_barcode_nomenclature'}), name='update-bcn'),
+    path('bcn/delete/<int:pk>/', BarcodeNomenclatureViewSet.as_view({'delete': 'delete_barcode_nomenclature'}), name='delete-bcn'),
+>>>>>>> e5ef20e6faa5594b57c646fde9c033923d255356
 ]

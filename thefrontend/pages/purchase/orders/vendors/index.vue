@@ -48,11 +48,14 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
+<<<<<<< HEAD
 import { storeToRefs } from 'pinia';
 import { useAuthStore } from '@/stores/auth';
 
 const authStore = useAuthStore();
 const { auth_user } = storeToRefs(authStore);
+=======
+>>>>>>> e5ef20e6faa5594b57c646fde9c033923d255356
 
 const users = ref([])
 const searchQuery = ref("")
@@ -60,6 +63,7 @@ const router = useRouter()
 
 const fetchUsers = async () => {
   try {
+<<<<<<< HEAD
     const response = await fetch('http://127.0.0.1:8000/purchasebackend/vendors/get_vendors/', {
       method: "POST",
       headers: { 'Content-Type': 'application/json' },
@@ -67,6 +71,12 @@ const fetchUsers = async () => {
       body: JSON.stringify({
         company_id: auth_user.value.company_id
       })
+=======
+    const response = await fetch('http://127.0.0.1:8000/purchasebackend/vendors/getvendors/', {
+      method: "GET",
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+>>>>>>> e5ef20e6faa5594b57c646fde9c033923d255356
     })
 
     if (!response.ok) {
@@ -77,7 +87,11 @@ const fetchUsers = async () => {
     users.value = data
     window.dispatchEvent(new CustomEvent('auth', { detail: true }))
   } catch (e) {
+<<<<<<< HEAD
     console.log(e);
+=======
+    await router.push('/Signup/login')
+>>>>>>> e5ef20e6faa5594b57c646fde9c033923d255356
     window.dispatchEvent(new CustomEvent('auth', { detail: false }))
   }
 }

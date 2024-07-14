@@ -1,5 +1,6 @@
 <template>
   <div class="-my-2 py-2 overflow-x-auto sm:-mx-6 sm:px-6 lg:-mx-8 pr-10 lg:px-8">
+<<<<<<< HEAD
     <nav aria-label="breadcrumb" class="w-max">
             <ol class="flex flex-wrap items-center w-full bg-opacity-60 rounded-md bg-transparent p-0 transition-all">
                 <li
@@ -31,6 +32,8 @@
                 </li>
             </ol>
         </nav>
+=======
+>>>>>>> e5ef20e6faa5594b57c646fde9c033923d255356
     <!-- Search and action buttons section -->
     <div
       class="align-middle rounded-tl-lg rounded-tr-lg inline-block w-full py-4 overflow-hidden bg-white shadow-lg px-12">
@@ -52,7 +55,11 @@
               </span>
             </div>
             <input type="text" v-model="searchVendor" @input="handleSearch"
+<<<<<<< HEAD
               class="flex-shrink flex-grow flex-auto leading-normal tracking-wide w-px flex-1 border border-none border-l-0 rounded rounded-l-none px-3 relative focus:outline-none text-xxs lg:text-xs lg:text-base text-gray-500 font-thin bg-white"
+=======
+              class="flex-shrink flex-grow flex-auto leading-normal tracking-wide w-px flex-1 border border-none border-l-0 rounded rounded-l-none px-3 relative focus:outline-none text-xxs lg:text-xs lg:text-base text-gray-500 font-thin"
+>>>>>>> e5ef20e6faa5594b57c646fde9c033923d255356
               placeholder="Search Vendor" />
           </div>
         </div>

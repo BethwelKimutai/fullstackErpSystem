@@ -6,12 +6,21 @@ from datetime import datetime, timedelta
 import jwt
 import phonenumbers
 from django.contrib.auth import login, logout, authenticate, get_user_model
+<<<<<<< HEAD
 from django.contrib.auth.hashers import make_password, check_password
 from django.core.exceptions import ValidationError
+=======
+from django.contrib.auth.handlers.modwsgi import check_password
+from django.contrib.auth.hashers import make_password
+>>>>>>> e5ef20e6faa5594b57c646fde9c033923d255356
 from django.core.mail import send_mail
 from django.core.serializers import json
 from django.db.models import Q
+<<<<<<< HEAD
 from django.http import JsonResponse
+=======
+from django.http import HttpResponse
+>>>>>>> e5ef20e6faa5594b57c646fde9c033923d255356
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from phonenumbers.phonenumberutil import parse, format_number, region_code_for_number
@@ -22,12 +31,22 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken, AccessToken
 
+<<<<<<< HEAD
 from thebackend import settings
 from .models import Company, User, UserOTP
 from .serializers import (
     CompanySerializer, UserSerializer, PasswordChangeSerializer,
     UserAvatarSerializer, CompanyLogoSerializer
 )
+=======
+from .models import Company, User, UserOTP, ProfilePicture, CompanyLogo
+from .serializers import CompanySerializer, UserSerializer, UserDetailsSerializer, PasswordChangeSerializer
+from django.core.exceptions import ValidationError, ObjectDoesNotExist
+from phonenumbers import parse, format_number, region_code_for_number
+from pycountry import countries
+import jwt
+import datetime
+>>>>>>> e5ef20e6faa5594b57c646fde9c033923d255356
 
 User = get_user_model()
 
@@ -99,10 +118,15 @@ class CompanyViewSet(viewsets.ModelViewSet):
 
             send_mail(
                 'Registration Approved',
+<<<<<<< HEAD
                 f"""Your registration has been approved. Here are your admin credentials:
                     \nUsername: {admin_user.username}\nPassword: jikoTrack@2024.
                     \n We advise you change your password immediately because of security reasons. 
                     This password expires after 24 hours""",
+=======
+                f"""Your registration has been approved. Here are your admin credentials:\n\nUsername: {admin_user.username}\nPassword: jikoTrack@2024.
+                    \n We advise you change your password immediately because of security reasons. This password expires after 24 hours""",
+>>>>>>> e5ef20e6faa5594b57c646fde9c033923d255356
                 'from@example.com',
                 [company.email],
                 fail_silently=False,
@@ -129,9 +153,24 @@ class CompanyViewSet(viewsets.ModelViewSet):
             except ValueError:
                 return Response({'error': 'Invalid UUID'}, status=status.HTTP_400_BAD_REQUEST)
 
+<<<<<<< HEAD
             company = Company.objects.get(id=company_id)
             if not request.user.is_superuser and request.user != company.user:
                 return Response({'error': 'Permission denied'}, status=status.HTTP_403_FORBIDDEN)
+=======
+            for company in companies:
+                company_details = {
+                    'id': str(company.id),
+                    'name': company.companyName,
+                    'email': company.email,
+                    'country': company.country,
+                    'city': company.city,
+                    'companySize': company.companySize,
+                    'primaryInterest': company.primaryInterest,
+                    'is_approved': company.is_approved,
+                }
+                company_list.append(company_details)
+>>>>>>> e5ef20e6faa5594b57c646fde9c033923d255356
 
             serializer = CompanyLogoSerializer(company, data=request.data, partial=True)
             if serializer.is_valid():
@@ -142,6 +181,30 @@ class CompanyViewSet(viewsets.ModelViewSet):
             return Response({'error': 'Company not found'}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
             return Response({"message": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    @action(detail=True, methods=['post'], url_path='upload-logo')
+    def upload_logo(self, request, pk=None):
+        company = self.get_object()
+        file = request.FILES.get('image')
+        if not file:
+            return Response({"detail": "No file provided"}, status=status.HTTP_400_BAD_REQUEST)
+
+        company_logo, created = CompanyLogo.objects.get_or_create(company=company)
+        company_logo.image = file
+        company_logo.save()
+
+        return Response({"detail": "Company logo uploaded successfully"}, status=status.HTTP_200_OK)
+
+    @action(detail=True, methods=['get'], url_path='get-logo')
+    def get_logo(self, request, pk=None):
+        company = self.get_object()
+        if not hasattr(company, 'logo') or not company.logo.image:
+            return Response({"detail": "No company logo found"}, status=status.HTTP_404_NOT_FOUND)
+
+        response = HttpResponse(content_type='image/jpeg')
+        response['Content-Disposition'] = f'attachment; filename={company.logo.image.name}'
+        response.write(company.logo.image.read())
+        return response
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -158,12 +221,30 @@ class UserViewSet(viewsets.ModelViewSet):
             if not user:
                 return Response({"message": "Invalid email or password"}, status=status.HTTP_401_UNAUTHORIZED)
 
+<<<<<<< HEAD
             company_id = str(user.company_id)
 
             payload = {
                 'exp': datetime.utcnow() + timedelta(days=1),
                 'iat': datetime.utcnow(),
                 'sub': str(user.id),
+=======
+            # Assuming user.company_id is the way to get the company ID associated with the user
+            company_id = str(user.company_id)  # Ensure company_id is a string
+
+            payload = {
+                'exp': datetime.datetime.utcnow() + datetime.timedelta(days=1),
+                'iat': datetime.datetime.utcnow(),
+                'sub': str(user.id),
+                'company_id': company_id  # Add company_id as a string
+            }
+
+            token = jwt.encode(payload, 'secret', algorithm='HS256')
+
+            user_details = {
+                'token': token,
+                'id': str(user.id),  # Convert UUID to string
+>>>>>>> e5ef20e6faa5594b57c646fde9c033923d255356
                 'username': user.username,
                 'email': user.email,
                 'is_manager': user.is_manager,
@@ -174,6 +255,7 @@ class UserViewSet(viewsets.ModelViewSet):
                 'company_id': str(user.company_id)
             }
 
+<<<<<<< HEAD
             tokens = jwt.encode(payload, settings.SECRET_KEY, algorithm='HS256')
 
             if not user.is_superuser:
@@ -181,6 +263,15 @@ class UserViewSet(viewsets.ModelViewSet):
 
             response = Response()
             response.set_cookie(key='jwt', value=tokens, httponly=True)
+=======
+            if not user.is_superuser:
+                company = Company.objects.get(id=user.company_id)
+                user_details['company_name'] = company.companyName
+
+            response = Response()
+            response.set_cookie(key='company_id', value=company_id, httponly=True)  # Set company_id in the cookies
+            response.set_cookie(key='jwt', value=token, httponly=True)
+>>>>>>> e5ef20e6faa5594b57c646fde9c033923d255356
             response.data = {
                 'jwt': tokens,
             }
@@ -232,12 +323,18 @@ class UserViewSet(viewsets.ModelViewSet):
 
             return JsonResponse({"user": user_details, "code": "200"})
 
+        except Company.DoesNotExist:
+            return Response({"message": "Company matching query does not exist."}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
             return Response({"message": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
     @action(detail=False, methods=['post'])
     def createUser(self, request):
         try:
+<<<<<<< HEAD
+=======
+            # Role mapping
+>>>>>>> e5ef20e6faa5594b57c646fde9c033923d255356
             role_mapping = {
                 'Manager': 'is_manager',
                 'Admin': 'is_staff',
@@ -247,23 +344,46 @@ class UserViewSet(viewsets.ModelViewSet):
                 'User': None
             }
 
+            # Extract role from request data
             role = request.data.get('role')
+            print("Role from request:", role)
+
+            # Add the corresponding role field to request data
             if role:
                 role_field = role_mapping.get(role)
                 if role_field is not None:
                     request.data[role_field] = True
 
+            print("Request data before serialization:", request.data)
+
+            # Create user using the serializer
             serializer = self.get_serializer(data=request.data)
             if serializer.is_valid():
                 user = serializer.save()
 
                 send_mail(
                     'Welcome to JikoTrack!',
+<<<<<<< HEAD
                     f"Thank you for creating an account with our app!\n\n"
                     f"You can now log in using your username: {user.username}\n"
                     f"For security reasons, your password is not included in this email.\n"
                     f"Please visit the login page to set your password.\n\n"
                     f"We hope you enjoy using our app!\n\nSincerely,\nJikoTrack Team",
+=======
+                    f"""
+                    Thank you for creating an account with our app!
+
+                    You can now log in using your username: {user.username}
+
+                    For security reasons, your password is not included in this email.
+                    Please visit the login page to set your password.
+
+                    We hope you enjoy using our app!
+
+                    Sincerely,
+                    JikoTrack Team
+                    """,
+>>>>>>> e5ef20e6faa5594b57c646fde9c033923d255356
                     'from@example.com',
                     [user.email],
                     fail_silently=False,
@@ -271,7 +391,44 @@ class UserViewSet(viewsets.ModelViewSet):
 
                 return Response({'status': 'user created'}, status=status.HTTP_201_CREATED)
             else:
+<<<<<<< HEAD
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+=======
+                print("Serializer errors:", serializer.errors)
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            print("Exception occurred:", str(e))
+            return Response({"message": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+    @action(detail=False, methods=['get'])
+    def getUsers(self, request):
+        try:
+            # Get the JWT token from the cookies
+            token = request.COOKIES.get('jwt')
+
+            if not token:
+                return Response({"message": "Unauthenticated"}, status=status.HTTP_401_UNAUTHORIZED)
+
+            # Decode the JWT token
+            try:
+                payload = jwt.decode(token, 'secret', algorithms=['HS256'])
+            except jwt.ExpiredSignatureError:
+                return Response({"message": "Authentication token has expired"}, status=status.HTTP_401_UNAUTHORIZED)
+            except jwt.InvalidTokenError:
+                return Response({"message": "Invalid authentication token"}, status=status.HTTP_401_UNAUTHORIZED)
+
+            # Get the user ID from the payload
+            user_id = payload.get('sub')
+            if not user_id:
+                return Response({"message": "Invalid payload in token"}, status=status.HTTP_401_UNAUTHORIZED)
+
+            # Retrieve the user object
+            user = get_object_or_404(User, id=user_id)
+
+            # Serialize the logged-in user data
+            serializer = UserDetailsSerializer(user)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+
+>>>>>>> e5ef20e6faa5594b57c646fde9c033923d255356
         except Exception as e:
             return Response({"message": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -350,7 +507,17 @@ class UserViewSet(viewsets.ModelViewSet):
             if user is None:
                 return Response({"message": "Invalid password"}, status=status.HTTP_401_UNAUTHORIZED)
 
+<<<<<<< HEAD
             refresh = RefreshToken.for_user(user)
+=======
+            # Create JWT token
+            payload = {
+                'sub': str(user.id),
+                'iat': timezone.now(),
+                'exp': timezone.now() + timezone.timedelta(hours=1)
+            }
+            token = jwt.encode(payload, 'secret', algorithm='HS256')
+>>>>>>> e5ef20e6faa5594b57c646fde9c033923d255356
 
             login(request, user)
 
@@ -498,6 +665,33 @@ class UserViewSet(viewsets.ModelViewSet):
         ]
         return Response(roles, status=status.HTTP_200_OK)
 
+<<<<<<< HEAD
+=======
+    @action(detail=True, methods=['post'], url_path='upload-profile-picture')
+    def upload_profile_picture(self, request, pk=None):
+        user = self.get_object()
+        file = request.FILES.get('image')
+        if not file:
+            return Response({"detail": "No file provided"}, status=status.HTTP_400_BAD_REQUEST)
+
+        profile_picture, created = ProfilePicture.objects.get_or_create(user=user)
+        profile_picture.image = file
+        profile_picture.save()
+
+        return Response({"detail": "Profile picture uploaded successfully"}, status=status.HTTP_200_OK)
+
+    @action(detail=True, methods=['get'], url_path='get-profile-picture')
+    def get_profile_picture(self, request, pk=None):
+        user = self.get_object()
+        if not hasattr(user, 'profile_picture') or not user.profile_picture.image:
+            return Response({"detail": "No profile picture found"}, status=status.HTTP_404_NOT_FOUND)
+
+        response = HttpResponse(content_type='image/jpeg')
+        response['Content-Disposition'] = f'attachment; filename={user.profile_picture.image.name}'
+        response.write(user.profile_picture.image.read())
+        return response
+
+>>>>>>> e5ef20e6faa5594b57c646fde9c033923d255356
     @action(detail=True, methods=['post'])
     def change_password(self, request, pk=None):
         user = self.get_object()
@@ -515,6 +709,7 @@ class UserViewSet(viewsets.ModelViewSet):
                 fail_silently=False,
             )
             return Response({"detail": "Password updated successfully"}, status=status.HTTP_200_OK)
+<<<<<<< HEAD
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     @action(detail=False, methods=['post'])
@@ -549,3 +744,6 @@ class UserViewSet(viewsets.ModelViewSet):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+=======
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+>>>>>>> e5ef20e6faa5594b57c646fde9c033923d255356

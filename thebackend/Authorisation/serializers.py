@@ -1,10 +1,11 @@
 from rest_framework import serializers
 from django.contrib.auth.hashers import make_password
-from .models import Company, User
+from .models import Company, User, ProfilePicture
 
 
 class CompanySerializer(serializers.ModelSerializer):
     id = serializers.UUIDField(format='hex', read_only=True)
+<<<<<<< HEAD
 
     class Meta:
         model = Company
@@ -12,6 +13,14 @@ class CompanySerializer(serializers.ModelSerializer):
             'id', 'name', 'email', 'is_approved', 'address', 'country', 'number', 'city', 'zone',
             'language', 'primaryInterest', 'companySize', 'companyName'
         ]
+=======
+    password = serializers.CharField(write_only=True)
+
+    class Meta:
+        model = Company
+        fields = ['id', 'name', 'email', 'is_approved', 'password', 'address', 'country', 'number', 'city', 'zone',
+                  'language', 'primaryInterest', 'companySize', 'companyName']
+>>>>>>> e5ef20e6faa5594b57c646fde9c033923d255356
 
     def create(self, validated_data):
         password = validated_data.pop('password', None)
@@ -36,11 +45,17 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
+<<<<<<< HEAD
         fields = [
             'id', 'username', 'email', 'password', 'is_manager', 'company', 'is_accounting_manager',
             'is_inventory_manager', 'is_purchase_manager', 'is_active', 'date_joined', 'first_name', 'last_name',
             'address1', 'address2', 'email2', 'country', 'state', 'zip_code', 'avatar'
         ]
+=======
+        fields = ['id', 'username', 'email', 'password', 'is_manager', 'company', 'is_accounting_manager',
+                  'is_inventory_manager', 'is_purchase_manager', 'is_active', 'date_joined', 'first_name', 'last_name',
+                  'address1', 'address2', 'email2', 'country', 'state', 'zip_code', 'profile_picture']
+>>>>>>> e5ef20e6faa5594b57c646fde9c033923d255356
 
     def create(self, validated_data):
         validated_data['password'] = make_password(validated_data['password'])
@@ -100,6 +115,7 @@ class PasswordChangeSerializer(serializers.Serializer):
         return data
 
 
+<<<<<<< HEAD
 class CompanyLogoSerializer(serializers.ModelSerializer):
     class Meta:
         model = Company
@@ -126,3 +142,9 @@ class UserAvatarSerializer(serializers.ModelSerializer):
 class UserLoginSerializer(serializers.Serializer):
     access = serializers.CharField()
     user_details = serializers.DictField()
+=======
+class ProfilePictureSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ProfilePicture
+        fields = ['image']
+>>>>>>> e5ef20e6faa5594b57c646fde9c033923d255356
