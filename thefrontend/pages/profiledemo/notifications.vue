@@ -9,7 +9,6 @@
             active-class="border-yellow-500">Notifications</nuxt-link>
           <nuxt-link to="/profiledemo/password" class="px-4 py-2 text-black hover:text-yellow-800 border-b-2"
             active-class="border-yellow-500">Password</nuxt-link>
-<<<<<<< HEAD
           <nuxt-link to="/profiledemo/compProfile" class="px-4 py-2 text-black hover:text-yellow-800 border-b-2"
             active-class="border-yellow-500">Company Info</nuxt-link>
         </div>
@@ -18,11 +17,6 @@
           <Profile />
         </div>
       </div>
-=======
-          <nuxt-link to="/profiledemo/personalinfo" class="px-4 py-2 text-black hover:text-yellow-800 border-b-2"
-            active-class="border-yellow-500">Personal Info</nuxt-link>
-        </div>
->>>>>>> e5ef20e6faa5594b57c646fde9c033923d255356
       </div>
     </nav>
     <div class="bg-white p-8 rounded-lg shadow-md mt-4 mx-auto max-w-4xl">
@@ -105,7 +99,6 @@
   </div>
 </template>
 <script>
-<<<<<<< HEAD
 import Profile from '/components/Profile.vue';
 
 export default{
@@ -115,11 +108,6 @@ export default{
 
 };
 
-=======
-definePageMeta({
-  layout: 'home'
-})
->>>>>>> e5ef20e6faa5594b57c646fde9c033923d255356
 </script>
 
 <style scoped>

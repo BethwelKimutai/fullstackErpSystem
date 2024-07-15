@@ -1,20 +1,9 @@
 import uuid
-<<<<<<< HEAD
 from django.db import models
 from django.contrib.auth.models import User
 from django.conf import settings  # Use correct import for settings
 from Authorisation.models import Company  # Correct import for the Company model
 from Inventory.models import Product, UnitOfMeasureCategory, PurchaseOrder as InventoryPurchaseOrder  # Assuming the Product model is in the inventory app
-=======
-
-from django.db import models
-from django.contrib.auth.models import User
-
-import settings
-from Authorisation.models import Company
-from Inventory.models import Product  # Assuming the Product model is in the inventory app
-
->>>>>>> e5ef20e6faa5594b57c646fde9c033923d255356
 
 class Vendor(models.Model):
     VENDOR_TYPE_CHOICES = [
@@ -40,10 +29,6 @@ class Vendor(models.Model):
     title = models.CharField(max_length=255, null=True, blank=True)
     tags = models.CharField(max_length=255, null=True, blank=True)
     vendor_company = models.ForeignKey(Company, on_delete=models.CASCADE)
-<<<<<<< HEAD
-=======
-
->>>>>>> e5ef20e6faa5594b57c646fde9c033923d255356
 
 class RequestForQuotation(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -65,7 +50,6 @@ class RequestForQuotation(models.Model):
         self.total = self.tax_excluded + self.taxes
         super().save(*args, **kwargs)
 
-<<<<<<< HEAD
 class PurchaseOrderProduct(models.Model):
     purchase_order = models.ForeignKey(InventoryPurchaseOrder, on_delete=models.CASCADE, related_name='products')  # Assuming PurchaseOrder in Inventory
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
@@ -105,46 +89,12 @@ class PurchaseOrder(models.Model):
     Shipping = models.DecimalField(max_digits=10, decimal_places=2)
     OtherCosts = models.DecimalField(max_digits=10, decimal_places=2)
     GrandTotal = models.DecimalField(max_digits=10, decimal_places=2)
-=======
-
-class PurchaseOrder(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    vendor = models.ForeignKey(Vendor, on_delete=models.CASCADE)
-    vendor_reference = models.CharField(max_length=255)
-    currency = models.CharField(max_length=10)
-    order_deadline = models.DateField()
-    expected_arrival = models.DateField()
-    deliver_to = models.CharField(max_length=255)
-    taxes = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
-    tax_excluded = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
-    total = models.DecimalField(max_digits=10, decimal_places=2, default=0.00, editable=False)
-    company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name='purchase_purchase_orders')
-    buyer = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE,
-                              related_name='purchase_purchase_orders')
-    reference = models.CharField(max_length=255, unique=True)
-    confirmation_date = models.DateField(auto_now_add=True)
-    source_document = models.CharField(max_length=255)
-    created_at = models.DateTimeField(auto_now_add=True)
->>>>>>> e5ef20e6faa5594b57c646fde9c033923d255356
 
     def save(self, *args, **kwargs):
         # Calculate total and save
         self.GrandTotal = self.SubtotallessDiscount + self.TotalTax + self.Shipping + self.OtherCosts
         super().save(*args, **kwargs)
 
-<<<<<<< HEAD
-=======
-
-class PurchaseOrderProduct(models.Model):
-    purchase_order = models.ForeignKey(PurchaseOrder, on_delete=models.CASCADE, related_name='products')
-    product = models.ForeignKey(Product, on_delete=models.CASCADE)
-    quantity = models.PositiveIntegerField()
-    unit_price = models.DecimalField(max_digits=10, decimal_places=2)
-    subtotal = models.DecimalField(max_digits=10, decimal_places=2)
-    company = models.ForeignKey(Company, on_delete=models.CASCADE)
-
-
->>>>>>> e5ef20e6faa5594b57c646fde9c033923d255356
 class RFQProduct(models.Model):
     rfq = models.ForeignKey(RequestForQuotation, on_delete=models.CASCADE, related_name='products')
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
@@ -153,10 +103,6 @@ class RFQProduct(models.Model):
     subtotal = models.DecimalField(max_digits=10, decimal_places=2)
     company = models.ForeignKey(Company, on_delete=models.CASCADE)
 
-<<<<<<< HEAD
-=======
-
->>>>>>> e5ef20e6faa5594b57c646fde9c033923d255356
 class VendorPriceList(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     vendor = models.CharField(max_length=255)

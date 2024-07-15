@@ -1,8 +1,4 @@
 <template>
-<<<<<<< HEAD
-=======
-    <!-- component -->
->>>>>>> e5ef20e6faa5594b57c646fde9c033923d255356
     <div class="min-h-screen bg-gray-50/50">
         <aside
             class="bg-gradient-to-br from-gray-800 to-gray-900 -translate-x-80 fixed inset-0 z-50 my-4 ml-4 h-[calc(100vh-32px)] w-72 rounded-xl transition-transform duration-300 xl:translate-x-0">
@@ -10,11 +6,7 @@
                 <a class="flex items-center gap-4 py-6 px-8" href="#/">
                     <h6
                         class="block antialiased tracking-normal font-sans text-base font-semibold leading-relaxed text-white">
-<<<<<<< HEAD
                         Material Tailwind Dashboard</h6>
-=======
-                        Purchase Dashboard</h6>
->>>>>>> e5ef20e6faa5594b57c646fde9c033923d255356
                 </a>
                 <button
                     class="middle none font-sans font-medium text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none w-8 max-w-[32px] h-8 max-h-[32px] rounded-lg text-xs text-white hover:bg-white/10 active:bg-white/30 absolute right-0 top-0 grid rounded-br-none rounded-tl-none xl:hidden"
@@ -50,11 +42,7 @@
                         </a>
                     </li>
                     <li>
-<<<<<<< HEAD
                         <nuxt-link to="/purchase/Orders">
-=======
-                        <nuxt-link to="">
->>>>>>> e5ef20e6faa5594b57c646fde9c033923d255356
                             <button
                                 class="middle none font-sans font-bold center transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-3 rounded-lg text-white hover:bg-white/10 active:bg-white/30 w-full flex items-center gap-4 px-4 capitalize"
                                 type="button">
@@ -66,7 +54,6 @@
                                 </svg>
                                 <p
                                     class="block antialiased font-sans text-base leading-relaxed text-inherit font-medium capitalize">
-<<<<<<< HEAD
                                     Orders</p>
                             </button>
                         </nuxt-link>
@@ -90,55 +77,6 @@
                     </li>
                     <li>
                         <nuxt-link to="/purchase/configuration">
-=======
-                                    profile</p>
-                            </button>
-                        </nuxt-link>
-                    </li>
-                    <li class="relative">
-                        <button
-                            class="middle none font-sans font-bold center transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-3 rounded-lg text-white hover:bg-white/10 active:bg-white/30 w-full flex items-center gap-4 px-4 capitalize"
-                            type="button" @click="toggleDropdown">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"
-                                aria-hidden="true" class="w-5 h-5 text-inherit">
-                                <path fill-rule="evenodd"
-                                    d="M1.5 5.625c0-1.036.84-1.875 1.875-1.875h17.25c1.035 0 1.875.84 1.875 1.875v12.75c0 1.035-.84 1.875-1.875 1.875H3.375A1.875 1.875 0 011.5 18.375V5.625zM21 9.375A.375.375 0 0020.625 9h-7.5a.375.375 0 00-.375.375v1.5c0 .207.168.375.375.375h7.5a.375.375 0 00.375-.375v-1.5zm0 3.75a.375.375 0 00-.375-.375h-7.5a.375.375 0 00-.375.375v1.5c0 .207.168.375.375.375h7.5a.375.375 0 00.375-.375v-1.5zm0 3.75a.375.375 0 00-.375-.375h-7.5a.375.375 0 00-.375.375v1.5c0 .207.168.375.375.375h7.5a.375.375 0 00.375-.375v-1.5zM10.875 18.75a.375.375 0 00.375-.375v-1.5a.375.375 0 00-.375-.375h-7.5a.375.375 0 00-.375.375v1.5c0 .207.168.375.375.375h7.5zM3.375 15h7.5a.375.375 0 00.375-.375v-1.5a.375.375 0 00-.375-.375h-7.5a.375.375 0 00-.375.375v1.5c0 .207.168.375.375.375zm0-3.75h7.5a.375.375 0 00.375-.375v-1.5A.375.375 0 0010.875 9h-7.5A.375.375 0 003 9.375v1.5c0 .207.168.375.375.375z"
-                                    clip-rule="evenodd"></path>
-                            </svg>
-                            <p
-                                class="block antialiased font-sans text-base leading-relaxed text-inherit font-medium capitalize">
-                                Orders
-                            </p>
-                            <div class="mt-4 ml-2">
-                                <p :class="number === 0 ? 'text-green-500' : 'text-red-500'" class="text-lg font-bold">
-                                    {{ number }}
-                                </p>
-                            </div>
-                        </button>
-                        <ul v-if="dropdownOpen" class="absolute bg-white rounded-md shadow-lg z-10 mt-2 left-0 w-48">
-                            <li>
-                                <nuxt-link to="/request-for-quotation"
-                                    class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                                    Request for Quotation
-                                </nuxt-link>
-                            </li>
-                            <li>
-                                <nuxt-link to="/purchase-orders"
-                                    class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                                    Purchase Orders
-                                </nuxt-link>
-                            </li>
-                            <li>
-                                <nuxt-link to="/vendors"
-                                    class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                                    Vendors
-                                </nuxt-link>
-                            </li>
-                        </ul>
-                    </li>
-                    <li>
-                        <nuxt-link to="">
->>>>>>> e5ef20e6faa5594b57c646fde9c033923d255356
                             <button
                                 class="middle none font-sans font-bold center transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-3 rounded-lg text-white hover:bg-white/10 active:bg-white/30 w-full flex items-center gap-4 px-4 capitalize"
                                 type="button">
@@ -150,60 +88,12 @@
                                 </svg>
                                 <p
                                     class="block antialiased font-sans text-base leading-relaxed text-inherit font-medium capitalize">
-<<<<<<< HEAD
                                     Configurations</p>
-=======
-                                    notifactions</p>
                             </button>
                         </nuxt-link>
                     </li>
                 </ul>
-                <ul class="mb-4 flex flex-col gap-1">
-                    <li class="mx-3.5 mt-4 mb-2">
-                        <p
-                            class="block antialiased font-sans text-sm leading-normal text-white font-black uppercase opacity-75">
-                            auth pages</p>
-                    </li>
-                    <li>
-                        <nuxt-link to="">
-                            <button
-                                class="middle none font-sans font-bold center transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-3 rounded-lg text-white hover:bg-white/10 active:bg-white/30 w-full flex items-center gap-4 px-4 capitalize"
-                                type="button">
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"
-                                    aria-hidden="true" class="w-5 h-5 text-inherit">
-                                    <path fill-rule="evenodd"
-                                        d="M7.5 3.75A1.5 1.5 0 006 5.25v13.5a1.5 1.5 0 001.5 1.5h6a1.5 1.5 0 001.5-1.5V15a.75.75 0 011.5 0v3.75a3 3 0 01-3 3h-6a3 3 0 01-3-3V5.25a3 3 0 013-3h6a3 3 0 013 3V9A.75.75 0 0115 9V5.25a1.5 1.5 0 00-1.5-1.5h-6zm10.72 4.72a.75.75 0 011.06 0l3 3a.75.75 0 010 1.06l-3 3a.75.75 0 11-1.06-1.06l1.72-1.72H9a.75.75 0 010-1.5h10.94l-1.72-1.72a.75.75 0 010-1.06z"
-                                        clip-rule="evenodd"></path>
-                                </svg>
-                                <p
-                                    class="block antialiased font-sans text-base leading-relaxed text-inherit font-medium capitalize">
-                                    sign in</p>
-                            </button>
-                        </nuxt-link>
-                    </li>
-                    <li>
-                        <nuxt-link to="">
-                            <button
-                                class="middle none font-sans font-bold center transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-3 rounded-lg text-white hover:bg-white/10 active:bg-white/30 w-full flex items-center gap-4 px-4 capitalize"
-                                type="button">
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"
-                                    aria-hidden="true" class="w-5 h-5 text-inherit">
-                                    <path
-                                        d="M6.25 6.375a4.125 4.125 0 118.25 0 4.125 4.125 0 01-8.25 0zM3.25 19.125a7.125 7.125 0 0114.25 0v.003l-.001.119a.75.75 0 01-.363.63 13.067 13.067 0 01-6.761 1.873c-2.472 0-4.786-.684-6.76-1.873a.75.75 0 01-.364-.63l-.001-.122zM19.75 7.5a.75.75 0 00-1.5 0v2.25H16a.75.75 0 000 1.5h2.25v2.25a.75.75 0 001.5 0v-2.25H22a.75.75 0 000-1.5h-2.25V7.5z">
-                                    </path>
-                                </svg>
-                                <p
-                                    class="block antialiased font-sans text-base leading-relaxed text-inherit font-medium capitalize">
-                                    sign up</p>
->>>>>>> e5ef20e6faa5594b57c646fde9c033923d255356
-                            </button>
-                        </nuxt-link>
-                    </li>
-                </ul>
-<<<<<<< HEAD
                 
-=======
->>>>>>> e5ef20e6faa5594b57c646fde9c033923d255356
             </div>
         </aside>
         <div class="p-4 xl:ml-80">
@@ -259,33 +149,7 @@
                                 </svg>
                             </span>
                         </button>
-<<<<<<< HEAD
                         <Profile />
-=======
-                        <a href="#">
-                            <button
-                                class="middle none font-sans font-bold center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-3 rounded-lg text-gray-500 hover:bg-blue-gray-500/10 active:bg-blue-gray-500/30 hidden items-center gap-1 px-4 xl:flex"
-                                type="button">
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"
-                                    aria-hidden="true" class="h-5 w-5 text-blue-gray-500">
-                                    <path fill-rule="evenodd"
-                                        d="M18.685 19.097A9.723 9.723 0 0021.75 12c0-5.385-4.365-9.75-9.75-9.75S2.25 6.615 2.25 12a9.723 9.723 0 003.065 7.097A9.716 9.716 0 0012 21.75a9.716 9.716 0 006.685-2.653zm-12.54-1.285A7.486 7.486 0 0112 15a7.486 7.486 0 015.855 2.812A8.224 8.224 0 0112 20.25a8.224 8.224 0 01-5.855-2.438zM15.75 9a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z"
-                                        clip-rule="evenodd"></path>
-                                </svg>Sign In </button>
-                            <button
-                                class="relative middle none font-sans font-medium text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none w-10 max-w-[40px] h-10 max-h-[40px] rounded-lg text-xs text-gray-500 hover:bg-blue-gray-500/10 active:bg-blue-gray-500/30 grid xl:hidden"
-                                type="button">
-                                <span class="absolute top-1/2 left-1/2 transform -translate-y-1/2 -translate-x-1/2">
-                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"
-                                        aria-hidden="true" class="h-5 w-5 text-blue-gray-500">
-                                        <path fill-rule="evenodd"
-                                            d="M18.685 19.097A9.723 9.723 0 0021.75 12c0-5.385-4.365-9.75-9.75-9.75S2.25 6.615 2.25 12a9.723 9.723 0 003.065 7.097A9.716 9.716 0 0012 21.75a9.716 9.716 0 006.685-2.653zm-12.54-1.285A7.486 7.486 0 0112 15a7.486 7.486 0 015.855 2.812A8.224 8.224 0 0112 20.25a8.224 8.224 0 01-5.855-2.438zM15.75 9a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z"
-                                            clip-rule="evenodd"></path>
-                                    </svg>
-                                </span>
-                            </button>
-                        </a>
->>>>>>> e5ef20e6faa5594b57c646fde9c033923d255356
                         <button
                             class="relative middle none font-sans font-medium text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none w-10 max-w-[40px] h-10 max-h-[40px] rounded-lg text-xs text-gray-500 hover:bg-blue-gray-500/10 active:bg-blue-gray-500/30"
                             type="button">
@@ -455,165 +319,7 @@
                             </button>
                         </div>
                         <div class="p-6 overflow-x-scroll px-0 pt-0 pb-2">
-<<<<<<< HEAD
                             
-=======
-                            <table class="w-full min-w-[640px] table-auto">
-                                <thead>
-                                    <tr>
-                                        <th class="border-b border-blue-gray-50 py-3 px-6 text-left">
-                                            <p
-                                                class="block antialiased font-sans text-[11px] font-medium uppercase text-blue-gray-400">
-                                                companies</p>
-                                        </th>
-                                        <th class="border-b border-blue-gray-50 py-3 px-6 text-left">
-                                            <p
-                                                class="block antialiased font-sans text-[11px] font-medium uppercase text-blue-gray-400">
-                                                budget</p>
-                                        </th>
-                                        <th class="border-b border-blue-gray-50 py-3 px-6 text-left">
-                                            <p
-                                                class="block antialiased font-sans text-[11px] font-medium uppercase text-blue-gray-400">
-                                                completion</p>
-                                        </th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td class="py-3 px-5 border-b border-blue-gray-50">
-                                            <div class="flex items-center gap-4">
-                                                <p
-                                                    class="block antialiased font-sans text-sm leading-normal text-blue-gray-900 font-bold">
-                                                    Material XD Version</p>
-                                            </div>
-                                        </td>
-
-                                        <td class="py-3 px-5 border-b border-blue-gray-50">
-                                            <p
-                                                class="block antialiased font-sans text-xs font-medium text-blue-gray-600">
-                                                $14,000</p>
-                                        </td>
-                                        <td class="py-3 px-5 border-b border-blue-gray-50">
-                                            <div class="w-10/12">
-                                                <p
-                                                    class="antialiased font-sans mb-1 block text-xs font-medium text-blue-gray-600">
-                                                    60%</p>
-                                                <div
-                                                    class="flex flex-start bg-blue-gray-50 overflow-hidden w-full rounded-sm font-sans text-xs font-medium h-1">
-                                                    <div class="flex justify-center items-center h-full bg-gradient-to-tr from-blue-600 to-blue-400 text-white"
-                                                        style="width: 60%;"></div>
-                                                </div>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td class="py-3 px-5 border-b border-blue-gray-50">
-                                            <div class="flex items-center gap-4">
-                                                <p
-                                                    class="block antialiased font-sans text-sm leading-normal text-blue-gray-900 font-bold">
-                                                    Add Progress Track</p>
-                                            </div>
-                                        </td>
-                                        <td class="py-3 px-5 border-b border-blue-gray-50">
-                                            <p
-                                                class="block antialiased font-sans text-xs font-medium text-blue-gray-600">
-                                                $3,000</p>
-                                        </td>
-                                        <td class="py-3 px-5 border-b border-blue-gray-50">
-                                            <div class="w-10/12">
-                                                <p
-                                                    class="antialiased font-sans mb-1 block text-xs font-medium text-blue-gray-600">
-                                                    10%</p>
-                                                <div
-                                                    class="flex flex-start bg-blue-gray-50 overflow-hidden w-full rounded-sm font-sans text-xs font-medium h-1">
-                                                    <div class="flex justify-center items-center h-full bg-gradient-to-tr from-blue-600 to-blue-400 text-white"
-                                                        style="width: 10%;"></div>
-                                                </div>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td class="py-3 px-5 border-b border-blue-gray-50">
-                                            <div class="flex items-center gap-4">
-                                                <p
-                                                    class="block antialiased font-sans text-sm leading-normal text-blue-gray-900 font-bold">
-                                                    Fix Platform Errors</p>
-                                            </div>
-                                        </td>
-                                        <td class="py-3 px-5 border-b border-blue-gray-50">
-                                            <p
-                                                class="block antialiased font-sans text-xs font-medium text-blue-gray-600">
-                                                Not set</p>
-                                        </td>
-                                        <td class="py-3 px-5 border-b border-blue-gray-50">
-                                            <div class="w-10/12">
-                                                <p
-                                                    class="antialiased font-sans mb-1 block text-xs font-medium text-blue-gray-600">
-                                                    100%</p>
-                                                <div
-                                                    class="flex flex-start bg-blue-gray-50 overflow-hidden w-full rounded-sm font-sans text-xs font-medium h-1">
-                                                    <div class="flex justify-center items-center h-full bg-gradient-to-tr from-green-600 to-green-400 text-white"
-                                                        style="width: 100%;"></div>
-                                                </div>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td class="py-3 px-5 border-b border-blue-gray-50">
-                                            <div class="flex items-center gap-4">
-                                                <p
-                                                    class="block antialiased font-sans text-sm leading-normal text-blue-gray-900 font-bold">
-                                                    Launch our Mobile App</p>
-                                            </div>
-                                        </td>
-                                        <td class="py-3 px-5 border-b border-blue-gray-50">
-                                            <p
-                                                class="block antialiased font-sans text-xs font-medium text-blue-gray-600">
-                                                $20,500</p>
-                                        </td>
-                                        <td class="py-3 px-5 border-b border-blue-gray-50">
-                                            <div class="w-10/12">
-                                                <p
-                                                    class="antialiased font-sans mb-1 block text-xs font-medium text-blue-gray-600">
-                                                    100%</p>
-                                                <div
-                                                    class="flex flex-start bg-blue-gray-50 overflow-hidden w-full rounded-sm font-sans text-xs font-medium h-1">
-                                                    <div class="flex justify-center items-center h-full bg-gradient-to-tr from-green-600 to-green-400 text-white"
-                                                        style="width: 100%;"></div>
-                                                </div>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td class="py-3 px-5 border-b border-blue-gray-50">
-                                            <div class="flex items-center gap-4">
-                                                <p
-                                                    class="block antialiased font-sans text-sm leading-normal text-blue-gray-900 font-bold">
-                                                    Add the New Pricing Page</p>
-                                            </div>
-                                        </td>
-                                        <td class="py-3 px-5 border-b border-blue-gray-50">
-                                            <p
-                                                class="block antialiased font-sans text-xs font-medium text-blue-gray-600">
-                                                $500</p>
-                                        </td>
-                                        <td class="py-3 px-5 border-b border-blue-gray-50">
-                                            <div class="w-10/12">
-                                                <p
-                                                    class="antialiased font-sans mb-1 block text-xs font-medium text-blue-gray-600">
-                                                    25%</p>
-                                                <div
-                                                    class="flex flex-start bg-blue-gray-50 overflow-hidden w-full rounded-sm font-sans text-xs font-medium h-1">
-                                                    <div class="flex justify-center items-center h-full bg-gradient-to-tr from-blue-600 to-blue-400 text-white"
-                                                        style="width: 25%;"></div>
-                                                </div>
-                                            </div>
-                                        </td>
-                                    </tr>
-
-                                </tbody>
-                            </table>
->>>>>>> e5ef20e6faa5594b57c646fde9c033923d255356
                         </div>
                     </div>
                 </div>
@@ -621,11 +327,7 @@
             <div class="text-blue-gray-600">
                 <footer class="py-2">
                     <div class="flex w-full flex-wrap items-center justify-center gap-6 px-2 md:justify-between">
-<<<<<<< HEAD
                         <p class="block antialiased font-sans text-sm leading-normal font-normal text-inherit">© 2023,
-=======
-                        <p class="block antialiased font-sans text-sm leading-normal font-normal text-inherit">© 2024,
->>>>>>> e5ef20e6faa5594b57c646fde9c033923d255356
                             made with <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"
                                 aria-hidden="true" class="-mt-0.5 inline-block h-3.5 w-3.5">
                                 <path
@@ -633,23 +335,6 @@
                                 </path>
                             </svg> by <a href="https://www.creative-tim.com" target="_blank"
                                 class="transition-colors hover:text-blue-500">JikoTrack</a> for a better web. </p>
-<<<<<<< HEAD
-=======
-                        <!-- <ul class="flex items-center gap-4">
-            <li>
-              <a href="https://www.creative-tim.com" target="_blank" class="block antialiased font-sans text-sm leading-normal py-0.5 px-1 font-normal text-inherit transition-colors hover:text-blue-500">Creative Tim</a>
-            </li>
-            <li>
-              <a href="https://www.creative-tim.com/presentation" target="_blank" class="block antialiased font-sans text-sm leading-normal py-0.5 px-1 font-normal text-inherit transition-colors hover:text-blue-500">About Us</a>
-            </li>
-            <li>
-              <a href="https://www.creative-tim.com/blog" target="_blank" class="block antialiased font-sans text-sm leading-normal py-0.5 px-1 font-normal text-inherit transition-colors hover:text-blue-500">Blog</a>
-            </li>
-            <li>
-              <a href="https://www.creative-tim.com/license" target="_blank" class="block antialiased font-sans text-sm leading-normal py-0.5 px-1 font-normal text-inherit transition-colors hover:text-blue-500">License</a>
-            </li>
-          </ul> -->
->>>>>>> e5ef20e6faa5594b57c646fde9c033923d255356
                     </div>
                 </footer>
             </div>
@@ -659,35 +344,9 @@
 <script>
 import Profile from '/components/Profile.Vue';
 
-<<<<<<< HEAD
 export default{
 components:{
     Profile,
     },
 };
 </script>
-=======
-<script>
-export default {
-    data() {
-        return {
-            dropdownOpen: false,
-            number: 0, // Replace this with the actual number you want to display
-        };
-    },
-    methods: {
-        toggleDropdown() {
-            this.dropdownOpen = !this.dropdownOpen;
-        },
-    },
-};
-</script>
-
-<style scoped>
-.middle {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-</style>
->>>>>>> e5ef20e6faa5594b57c646fde9c033923d255356

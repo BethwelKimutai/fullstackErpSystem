@@ -7,26 +7,16 @@ from .models import (Product, ProductCategory, ProductTemplate, ReplenishOrder, 
 
 class ProductCategorySerializer(serializers.ModelSerializer):
     id = serializers.UUIDField(format='hex')
-<<<<<<< HEAD
     company_name = serializers.CharField(source='company.name', read_only=True)
 
     class Meta:
         model = ProductCategory
         fields = ['id','name', 'description', 'company', 'company_name']
-=======
-
-    class Meta:
-        model = ProductCategory
-        fields = ['name', 'description']
->>>>>>> e5ef20e6faa5594b57c646fde9c033923d255356
 
 
 class ProductTemplateSerializer(serializers.ModelSerializer):
     id = serializers.UUIDField(format='hex')
-<<<<<<< HEAD
     company_name = serializers.CharField(source='company.name', read_only=True)
-=======
->>>>>>> e5ef20e6faa5594b57c646fde9c033923d255356
 
     class Meta:
         model = ProductTemplate
@@ -35,10 +25,7 @@ class ProductTemplateSerializer(serializers.ModelSerializer):
 
 class ProductSerializer(serializers.ModelSerializer):
     id = serializers.UUIDField(format='hex')
-<<<<<<< HEAD
     company_name = serializers.CharField(source='company.name', read_only=True)
-=======
->>>>>>> e5ef20e6faa5594b57c646fde9c033923d255356
 
     class Meta:
         model = Product
@@ -127,7 +114,6 @@ class LandedCostSerializer(serializers.ModelSerializer):
 
 
 class ProductAttributeSerializer(serializers.ModelSerializer):
-<<<<<<< HEAD
     id = serializers.UUIDField(format='hex')
     company_name = serializers.CharField(source='company.name', read_only=True)
 
@@ -149,27 +135,12 @@ class ProductPackagingSerializer(serializers.ModelSerializer):
     id = serializers.UUIDField(format='hex')
     company_name = serializers.CharField(source='company.name', read_only=True)
 
-=======
-    class Meta:
-        model = ProductAttribute
-        fields = ['id', 'name', 'value', 'product']
-
-
-class UnitOfMeasureCategorySerializer(serializers.ModelSerializer):
-    class Meta:
-        model = UnitOfMeasureCategory
-        fields = ['id', 'name', 'description']
-
-
-class ProductPackagingSerializer(serializers.ModelSerializer):
->>>>>>> e5ef20e6faa5594b57c646fde9c033923d255356
     class Meta:
         model = ProductPackaging
         fields = ['id', 'product', 'packaging_type', 'dimensions', 'weight', 'volume']
 
 
 class ReorderingRuleSerializer(serializers.ModelSerializer):
-<<<<<<< HEAD
     id = serializers.UUIDField(format='hex')
     company_name = serializers.CharField(source='company.name', read_only=True)
 
@@ -185,14 +156,3 @@ class BarcodeNomenclatureSerializer(serializers.ModelSerializer):
     class Meta:
         model = BarcodeNomenclature
         fields = ['id', 'name', 'description', 'pattern','company', 'company_name']
-=======
-    class Meta:
-        model = ReorderingRule
-        fields = ['id', 'product', 'min_quantity', 'max_quantity', 'reorder_quantity']
-
-
-class BarcodeNomenclatureSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = BarcodeNomenclature
-        fields = ['id', 'name', 'description', 'pattern']
->>>>>>> e5ef20e6faa5594b57c646fde9c033923d255356

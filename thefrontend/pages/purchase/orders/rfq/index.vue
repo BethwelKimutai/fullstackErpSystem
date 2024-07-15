@@ -1,6 +1,5 @@
 <template>
   <div class="-my-2 py-2 overflow-x-auto sm:-mx-6 sm:px-6 lg:-mx-8 pr-10 lg:px-8">
-<<<<<<< HEAD
     <nav aria-label="breadcrumb" class="w-max">
             <ol class="flex flex-wrap items-center w-full bg-opacity-60 rounded-md bg-transparent p-0 transition-all">
                 <li
@@ -32,8 +31,6 @@
                 </li>
             </ol>
         </nav>
-=======
->>>>>>> e5ef20e6faa5594b57c646fde9c033923d255356
     <!-- Search and action buttons section -->
     <div
       class="align-middle rounded-tl-lg rounded-tr-lg inline-block w-full py-4 overflow-hidden bg-white shadow-lg px-12">
@@ -55,11 +52,7 @@
               </span>
             </div>
             <input type="text" v-model="searchVendor" @input="handleSearch"
-<<<<<<< HEAD
               class="flex-shrink flex-grow flex-auto leading-normal tracking-wide w-px flex-1 border border-none border-l-0 rounded rounded-l-none px-3 relative focus:outline-none text-xxs lg:text-xs lg:text-base text-gray-500 font-thin bg-white"
-=======
-              class="flex-shrink flex-grow flex-auto leading-normal tracking-wide w-px flex-1 border border-none border-l-0 rounded rounded-l-none px-3 relative focus:outline-none text-xxs lg:text-xs lg:text-base text-gray-500 font-thin"
->>>>>>> e5ef20e6faa5594b57c646fde9c033923d255356
               placeholder="Search Vendor" />
           </div>
         </div>
@@ -132,46 +125,46 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
-import { useRouter } from 'vue-router';
+// import { ref, onMounted } from 'vue';
+// import { useRouter } from 'vue-router';
 
-const vendors = ref([]);
-const searchVendor = ref('');
+// const vendors = ref([]);
+// const searchVendor = ref('');
 
-const fetchVendors = async () => {
-  try {
-    const response = await fetch('http://127.0.0.1:8000/purchasebackend/rfqs/', {
-      method: "GET",
-      headers: { 'Content-Type': 'application/json' },
-      credentials: 'include',
-    });
+// const fetchVendors = async () => {
+//   try {
+//     const response = await fetch('http://127.0.0.1:8000/purchasebackend/rfqs/', {
+//       method: "GET",
+//       headers: { 'Content-Type': 'application/json' },
+//       credentials: 'include',
+//     });
 
-    if (!response.ok) {
-      throw new Error('Network response was not ok');
-    }
+//     if (!response.ok) {
+//       throw new Error('Network response was not ok');
+//     }
 
-    const data = await response.json();
-    vendors.value = data;
-  } catch (error) {
-    console.error('Failed to fetch vendors:', error);
-  }
-};
+//     const data = await response.json();
+//     vendors.value = data;
+//   } catch (error) {
+//     console.error('Failed to fetch vendors:', error);
+//   }
+// };
 
-const viewDetails = (vendorId) => {
-  router.push(`/home/vendorDetails/${vendorId}`);
-};
+// const viewDetails = (vendorId) => {
+//   router.push(`/home/vendorDetails/${vendorId}`);
+// };
 
-const handleSearch = () => {
-  // Filter vendors based on search input
-  const searchTerm = searchVendor.value.toLowerCase();
-  filteredVendors.value = vendors.value.filter(vendor =>
-    vendor.vendor_name.toLowerCase().includes(searchTerm)
-  );
-};
+// const handleSearch = () => {
+//   // Filter vendors based on search input
+//   const searchTerm = searchVendor.value.toLowerCase();
+//   filteredVendors.value = vendors.value.filter(vendor =>
+//     vendor.vendor_name.toLowerCase().includes(searchTerm)
+//   );
+// };
 
-const filteredVendors = ref([]);
+// const filteredVendors = ref([]);
 
-onMounted(fetchVendors);
+// onMounted(fetchVendors);
 
 definePageMeta({
   layout: 'purchase',
